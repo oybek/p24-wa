@@ -44,7 +44,7 @@ function App() {
   const [trips, setTrips] = useState<Trip[]>([])
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null); // Track selected trip
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for modal visibility
-  const [proposedPrices, setProposedPrices] = useState<Map<string, number>>(new Map());
+  const [proposedPrices, setProposedPrices] = useState<Map<string, number | null>>(new Map());
 
   useEffect(() => {
     registerLocale('ru', ru);
