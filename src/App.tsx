@@ -49,7 +49,7 @@ function App() {
             onChange={setSelectedDate}
             showTimeSelect={false}
             dateFormat="d MMMM yyyy"
-            customInput={<DatePicker readOnly/>}
+            customInput={<DatePicker readOnly onFocus={(e) => e.preventDefault()} />}
           />
         </div>
         <div className="select-container">
