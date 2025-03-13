@@ -34,12 +34,12 @@
 
 .card1 {
   background-color: #eee;
-  padding: 2vh;
-  border-radius: 1vh;
+  padding: 4vw;
+  border-radius: 2vw;
   width: '100%';
   text-align: 'left';
-  font-size: 1.8vh;
-  margin-bottom: 1vh;
+  font-size: 5vw;
+  margin-bottom: 3vw;
 }
 
 .card {
@@ -51,30 +51,30 @@
 }
 
 .select-container {
-  margin-bottom: 3vh;
+  margin-bottom: 3vw;
 }
 
 .select-container label {
   display: block;
   font-weight: thin;
-  margin-bottom: 1vh; /* Adds space between the label and the select */
+  margin-bottom: 1vw; /* Adds space between the label and the select */
   text-align: left; /* Ensure the label is left-aligned */
 }
 
 .react-select__control, .react-select__menu {
-  border-radius: 1vh !important; /* Set border radius */
+  border-radius: 1vw !important; /* Set border radius */
 }
 
 .react-datepicker__input-container input {
+  place-items: center;
   width: 100%;
-  border: 0.2vh solid #ddd;
-  border-radius: 1vh;
-  padding: 10px;
-  font-size: 1.8vh;
+  border: 0 solid #ddd;
+  padding: 5vw;
+  font-size: 8vw;
 }
 
 .react-datepicker {
   border: 2px solid #ccc;
-  border-radius: 1vh;
+  border-radius: 2vw;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

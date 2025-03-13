@@ -28,24 +28,24 @@ body {
 }
 
 h1 {
-  font-size: 6vh;
-  line-height: 6vh;
+  font-size: 6vw;
+  line-height: 6vw;
   text-align: center;
 }
 
 label {
-  font-size: 1.6vh;
+  font-size: 5vw;
 }
 
 .select-container {
-  font-size: 1.8vh;
+  font-size: 8vw;
 }
 
 button {
-  border-radius: 1vh;
-  border: 0.6vh solid transparent;
-  padding: 0.8vh;
-  font-size: 1.6vh;
+  border-radius: 2vw;
+  border: 0vw solid transparent;
+  padding: 5vw;
+  font-size: 5vw;
   font-weight: 500;
   font-family: inherit;
   background-color: #ffca28;
@@ -58,7 +58,7 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 1vh auto -webkit-focus-ring-color;
+  outline: 1vw auto -webkit-focus-ring-color;
 }
 
 @media (prefers-color-scheme: light) {
