@@ -1,23 +1,57 @@
 import './App.css'
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import "react-datepicker/dist/react-datepicker.css";
 
+interface Trip {
+  cityA: string;
+  cityB: string;
+  date: Date;
+  peopleCount: number;
+  userName: string;
+}
+
+const testTrips: Trip[] = [
+  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T08:30:00"), peopleCount: 4, userName: "Aybek" },
+  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T14:45:00"), peopleCount: 2, userName: "Beksultan" },
+  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T19:15:00"), peopleCount: 5, userName: "Nurbek" },
+  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T06:00:00"), peopleCount: 3, userName: "John" },
+  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T23:45:00"), peopleCount: 6, userName: "Oliver" },
+];
+
+const cityList = [
+  { value: 'bishkek', label: 'Бишкек' },
+  { value: 'osh', label: 'Ош' },
+  { value: 'karakol', label: 'Каракол' },
+  { value: 'naryn', label: 'Нарын' },
+  { value: 'talas', label: 'Талас' },
+  { value: 'batken', label: 'Баткен' },
+];
+
+const getCityLabel = (cityValue: string) => {
+  const city = cityList.find((c) => c.value === cityValue);
+  return city ? city.label : cityValue;
+};
+
 function App() {
-  const [_, setCount] = useState(0)
   const [cityA, setCityA] = useState<any>(null)
   const [cityB, setCityB] = useState<any>(null)
-  const [selectedDate, setSelectedDate] = useState<any>(new Date());
+  const [selectedDate, setSelectedDate] = useState<any>(new Date())
+  const [trips, setTrips] = useState<Trip[]>([])
 
-  const cityList = [
-    { value: 'bishkek', label: 'Бишкек' },
-    { value: 'osh', label: 'Ош' },
-    { value: 'karakol', label: 'Каракол' },
-    { value: 'naryn', label: 'Нарын' },
-    { value: 'talas', label: 'Талас' },
-    { value: 'batken', label: 'Баткен' },
-  ];
+  const filterTrips = () => {
+    console.log(cityA.value + " " + cityB.value)
+    const filteredTrips = testTrips.filter((trip) => {
+      console.log(cityA.value + " == " + trip.cityA)
+      const matchesCityA = cityA ? trip.cityA === cityA.value : true;
+      const matchesCityB = cityB ? trip.cityB === cityB.value : true;
+      const matchesDate = selectedDate ? trip.date.toDateString() === selectedDate.toDateString() : true;
+      return matchesCityA && matchesCityB && matchesDate;
+    });
+    const sortedTrips = filteredTrips.sort((a, b) => a.date.getTime() - b.date.getTime());
+    setTrips(sortedTrips);
+  };
 
   return (
     <>
@@ -54,23 +88,19 @@ function App() {
           />
         </div>
         <div className="select-container">
-          <button onClick={() => setCount((count) => count + 1)}>
+          <button onClick={filterTrips}>
             Посмотреть попутчиков
           </button>
         </div>
         <div>
-          <div className="card1">
-            Бишкек - Каракол 🕙 09:00 👤x1 <b>Aybek</b>
-          </div>
-          <div className="card1">
-            Бишкек - Каракол 🕙 10:00 👤x2 <b>Begulan</b>
-          </div>
-          <div className="card1">
-            Бишкек - Каракол 🕙 11:00 👤x1 <b>Aiturgan</b>
-          </div>
-          <div className="card1">
-            Бишкек - Каракол 🕙 13:00 👤x3 <b>Beka</b>
-          </div>
+          {trips.map((trip, index) => (
+            <div key={index} className="card1">
+              {getCityLabel(trip.cityA)} - {getCityLabel(trip.cityB)}{" "}
+              🕙{trip.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
+              👤x{trip.peopleCount}{" "}
+              <b>{trip.userName}</b>
+            </div>
+          ))}
         </div>
         <p className="read-the-docs">
           Попутчики
