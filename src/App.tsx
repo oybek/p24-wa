@@ -1,8 +1,10 @@
+import "react-datepicker/dist/react-datepicker.css";
 import './App.css'
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { useState } from 'react'
-import "react-datepicker/dist/react-datepicker.css";
+import { registerLocale } from "react-datepicker";
+import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
+import { useState, useEffect } from 'react'
 
 interface Trip {
   cityA: string;
@@ -40,12 +42,14 @@ function App() {
   const [selectedDate, setSelectedDate] = useState<any>(new Date())
   const [trips, setTrips] = useState<Trip[]>([])
 
+  useEffect(() => {
+    registerLocale('ru', ru);
+  }, []);
+
   const filterTrips = () => {
-    console.log(cityA.value + " " + cityB.value)
     const filteredTrips = testTrips.filter((trip) => {
-      console.log(cityA.value + " == " + trip.cityA)
-      const matchesCityA = cityA ? trip.cityA === cityA.value : true;
-      const matchesCityB = cityB ? trip.cityB === cityB.value : true;
+      const matchesCityA = cityA ? trip.cityA === cityA.value : false;
+      const matchesCityB = cityB ? trip.cityB === cityB.value : false;
       const matchesDate = selectedDate ? trip.date.toDateString() === selectedDate.toDateString() : true;
       return matchesCityA && matchesCityB && matchesDate;
     });
@@ -85,6 +89,7 @@ function App() {
             dateFormat="d MMMM yyyy"
             onFocus={e => e.target.blur()}
             customInput={<DatePicker readOnly />}
+            locale="ru"
           />
         </div>
         <div className="select-container">
