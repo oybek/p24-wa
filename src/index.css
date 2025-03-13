@@ -38,14 +38,14 @@ label {
 }
 
 .select-container {
-  font-size: 5vw;
+  font-size: 4vw;
 }
 
 button {
   border-radius: 2vw;
   border: 0vw solid transparent;
-  padding: 5vw;
-  font-size: 5vw;
+  padding: 4vw;
+  font-size: 4vw;
   font-weight: 500;
   font-family: inherit;
   background-color: #ffca28;

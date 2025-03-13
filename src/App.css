@@ -34,11 +34,11 @@
 
 .card1 {
   background-color: #eee;
-  padding: 4vw;
+  padding: 3vw;
   border-radius: 2vw;
   width: '100%';
   text-align: 'left';
-  font-size: 5vw;
+  font-size: 4vw;
   margin-bottom: 3vw;
 }
 
@@ -66,11 +66,11 @@
 }
 
 .react-datepicker__input-container input {
-  place-items: center;
+  text-align: center;
   width: 100%;
   border: 0 solid #ddd;
   padding: 5vw;
-  font-size: 5vw;
+  font-size: 4vw;
 }
 
 .react-datepicker {
