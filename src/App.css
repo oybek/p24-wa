@@ -1,0 +1,80 @@
+#root {
+  width: 100%;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card1 {
+  background-color: #eee;
+  padding: 2vh;
+  border-radius: 1vh;
+  width: '100%';
+  text-align: 'left';
+  font-size: 1.8vh;
+  margin-bottom: 1vh;
+}
+
+.card {
+  padding: 5vw;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.select-container {
+  margin-bottom: 3vh;
+}
+
+.select-container label {
+  display: block;
+  font-weight: thin;
+  margin-bottom: 1vh; /* Adds space between the label and the select */
+  text-align: left; /* Ensure the label is left-aligned */
+}
+
+.react-select__control, .react-select__menu {
+  border-radius: 1vh !important; /* Set border radius */
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  border: 0.2vh solid #ddd;
+  border-radius: 1vh;
+  padding: 10px;
+  font-size: 1.8vh;
+}
+
+.react-datepicker {
+  border: 2px solid #ccc;
+  border-radius: 1vh;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
