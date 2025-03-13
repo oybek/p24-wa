@@ -1,7 +1,7 @@
 import './App.css'
 import DatePicker from 'react-datepicker';
 import Select from 'react-select';
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import "react-datepicker/dist/react-datepicker.css";
 
 interface Trip {
