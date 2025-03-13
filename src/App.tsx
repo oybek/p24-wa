@@ -73,7 +73,7 @@ function App() {
           </div>
         </div>
         <p className="read-the-docs">
-          ОсОО "Тамбапс"
+          Попутчики
         </p>
       </div>
     </>
