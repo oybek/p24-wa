@@ -80,8 +80,9 @@
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   z-index: 1000;
+  padding-top: 5vh;
 }
 
 .modal {
@@ -127,4 +128,23 @@
 
 .modal-close:hover {
   color: red; /* Change color when hovered */
+}
+
+/* Styles for the price input */
+.price-input-container {
+  margin-top: 20px;
+}
+
+.price-input-container label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.price-input-container input {
+  width: 95%;
+  padding: 8px;
+  font-size: 4vw;
+  border-radius: 2vw;
+  border: 1px solid #ddd;
 }

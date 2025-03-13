@@ -43,6 +43,7 @@ function App() {
   const [trips, setTrips] = useState<Trip[]>([])
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null); // Track selected trip
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for modal visibility
+  const [proposedPrice, setProposedPrice] = useState<string>(''); // State for proposed price
 
   useEffect(() => {
     registerLocale('ru', ru);
@@ -67,6 +68,16 @@ function App() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedTrip(null);
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // If the value is '0' and the user starts typing, remove the '0'
+    if (value === '0' && e.target.selectionStart === 1) {
+      setProposedPrice(''); // Clear the '0' if user starts typing
+    } else {
+      setProposedPrice(value); // Set the new value
+    }
   };
 
   return (
@@ -132,6 +143,17 @@ function App() {
             <p><b>{selectedTrip.userName}</b> ищет попутку</p>
             <p>🕙 Время выезда: <b>{selectedTrip.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</b></p>
             <p>👤 Количество человек: <b>{selectedTrip.peopleCount}</b></p>
+                  {/* Price input field */}
+            <div className="price-input-container">
+              <p><b>Предложите цену</b></p>
+              <input
+                type="number"
+                id="price"
+                value={proposedPrice}
+                onChange={handlePriceChange}
+                placeholder="Цена"
+              />
+            </div>
           </div>
         </div>
       )}
