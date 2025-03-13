@@ -132,7 +132,7 @@
 
 /* Styles for the price input */
 .price-input-container {
-  margin-top: 20px;
+  margin-bottom: 3vw;
 }
 
 .price-input-container label {
@@ -147,4 +147,8 @@
   font-size: 4vw;
   border-radius: 2vw;
   border: 1px solid #ddd;
+}
+
+.card1.has-proposed-price {
+  background-color: rgba(0, 255, 0, 0.4); /* Light green background */
 }

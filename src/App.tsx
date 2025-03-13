@@ -7,6 +7,7 @@ import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react'
 
 interface Trip {
+  id: string;
   cityA: string;
   cityB: string;
   date: Date;
@@ -15,11 +16,11 @@ interface Trip {
 }
 
 const testTrips: Trip[] = [
-  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T08:30:00"), peopleCount: 4, userName: "Aybek" },
-  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T14:45:00"), peopleCount: 2, userName: "Beksultan" },
-  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T19:15:00"), peopleCount: 5, userName: "Nurbek" },
-  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T06:00:00"), peopleCount: 3, userName: "John" },
-  { cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T23:45:00"), peopleCount: 6, userName: "Oliver" },
+  { id: "1", cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T08:30:00"), peopleCount: 4, userName: "Aybek" },
+  { id: "2", cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T14:45:00"), peopleCount: 2, userName: "Beksultan" },
+  { id: "3", cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T19:15:00"), peopleCount: 5, userName: "Nurbek" },
+  { id: "4", cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T06:00:00"), peopleCount: 3, userName: "John" },
+  { id: "5", cityA: "bishkek", cityB: "karakol", date: new Date("2025-03-13T23:45:00"), peopleCount: 6, userName: "Oliver" },
 ];
 
 const cityList = [
@@ -43,7 +44,7 @@ function App() {
   const [trips, setTrips] = useState<Trip[]>([])
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null); // Track selected trip
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for modal visibility
-  const [proposedPrice, setProposedPrice] = useState<string>(''); // State for proposed price
+  const [proposedPrices, setProposedPrices] = useState<Map<string, number>>(new Map());
 
   useEffect(() => {
     registerLocale('ru', ru);
@@ -72,11 +73,15 @@ function App() {
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // If the value is '0' and the user starts typing, remove the '0'
-    if (value === '0' && e.target.selectionStart === 1) {
-      setProposedPrice(''); // Clear the '0' if user starts typing
-    } else {
-      setProposedPrice(value); // Set the new value
+    if (!isNaN(Number(value)) && selectedTrip) {
+      setProposedPrices(prevPrices => new Map(prevPrices.set(selectedTrip.id, value === '' ? null : Number(value))));
+    }
+  };
+
+  const handleProposePrice = () => {
+    console.log(proposedPrices)
+    if (selectedTrip) {
+      closeModal();
     }
   };
 
@@ -121,14 +126,18 @@ function App() {
           </button>
         </div>
         <div>
-          {trips.map((trip, index) => (
-            <div key={index} className="card1" onClick={() => handleCardClick(trip)}>
+          {trips.map((trip, index) => {
+            const proposedPrice = proposedPrices.get(trip.id);
+            const isPriceProposed = proposedPrice !== null && proposedPrice !== undefined;
+            return <div key={index}
+                 className={`card1 ${isPriceProposed ? 'has-proposed-price' : ''}`}
+                 onClick={() => handleCardClick(trip)}>
               {getCityLabel(trip.cityA)} - {getCityLabel(trip.cityB)}{" "}
               🕙{trip.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
               👤x{trip.peopleCount}{" "}
               <b>{trip.userName}</b>
             </div>
-          ))}
+          })}
         </div>
         <p className="read-the-docs">
           Попутчики
@@ -149,10 +158,15 @@ function App() {
               <input
                 type="number"
                 id="price"
-                value={proposedPrice}
+                value={proposedPrices.get(selectedTrip.id) || ''}
                 onChange={handlePriceChange}
                 placeholder="Цена"
               />
+            </div>
+            <div className="container">
+              <button onClick={handleProposePrice} className="propose-button">
+                Предложить
+              </button>
             </div>
           </div>
         </div>
