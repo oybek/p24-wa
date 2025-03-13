@@ -8,7 +8,7 @@ function App() {
   const [_, setCount] = useState(0)
   const [cityA, setCityA] = useState<any>(null)
   const [cityB, setCityB] = useState<any>(null)
-  const [selectedDate, setSelectedDate] = useState<any>(null);
+  const [selectedDate, setSelectedDate] = useState<any>(new Date());
 
   const cityList = [
     { value: 'bishkek', label: 'Бишкек' },
@@ -48,9 +48,8 @@ function App() {
             selected={selectedDate}
             onChange={setSelectedDate}
             showTimeSelect={false}
-            timeFormat="HH:mm"
             dateFormat="d MMMM yyyy"
-            timeIntervals={30} // Allow 15-minute intervals for the time picker
+            customInput={<DatePicker readOnly/>}
           />
         </div>
         <div className="select-container">
