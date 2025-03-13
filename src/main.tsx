@@ -7,8 +7,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter basename="/thumbups-webapp">
     <Routes>
-      <Route path="/search" element={<App/>} />
-      <Route path="/create" element={<Create/>} />
+      <Route path="search" element={<App/>} />
+      <Route path="create" element={<Create/>} />
     </Routes>
   </BrowserRouter>
 )
