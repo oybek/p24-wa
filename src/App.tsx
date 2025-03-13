@@ -5,7 +5,7 @@ import { useState } from 'react'
 import "react-datepicker/dist/react-datepicker.css";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [_, setCount] = useState(0)
   const [cityA, setCityA] = useState<any>(null)
   const [cityB, setCityB] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState<any>(null);
