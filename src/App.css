@@ -152,3 +152,11 @@
 .card1.has-proposed-price {
   background-color: rgba(0, 255, 0, 0.4); /* Light green background */
 }
+
+.select-container input {
+  width: 95%;
+  padding: 8px;
+  font-size: 4vw;
+  border-radius: 2vw;
+  border: 1px solid #ddd;
+}

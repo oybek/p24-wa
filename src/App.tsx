@@ -47,8 +47,13 @@ function App() {
   const [proposedPrices, setProposedPrices] = useState<Map<string, number | null>>(new Map());
 
   useEffect(() => {
-    registerLocale('ru', ru);
-  }, []);
+    // TODO
+    // 1. Get last search details and set cityA, cityB selectedDate is today
+    // 2. Perform the search, update trips
+    // 3. Load offers and update proposedPrices
+    console.log("hello")
+    registerLocale('ru', ru)
+  }, [])
 
   const filterTrips = () => {
     const filteredTrips = testTrips.filter((trip) => {
@@ -79,7 +84,6 @@ function App() {
   };
 
   const handleProposePrice = () => {
-    console.log(proposedPrices)
     if (selectedTrip) {
       closeModal();
     }
