@@ -49,8 +49,8 @@ function App() {
             onChange={setSelectedDate}
             showTimeSelect={false}
             dateFormat="d MMMM yyyy"
-            disabledKeyboardNavigation
             onFocus={e => e.target.blur()}
+            customInput={<DatePicker readOnly />}
           />
         </div>
         <div className="select-container">
