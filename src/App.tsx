@@ -41,6 +41,8 @@ function App() {
   const [cityB, setCityB] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState<any>(new Date())
   const [trips, setTrips] = useState<Trip[]>([])
+  const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null); // Track selected trip
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State for modal visibility
 
   useEffect(() => {
     registerLocale('ru', ru);
@@ -55,6 +57,16 @@ function App() {
     });
     const sortedTrips = filteredTrips.sort((a, b) => a.date.getTime() - b.date.getTime());
     setTrips(sortedTrips);
+  };
+
+  const handleCardClick = (trip: Trip) => {
+    setSelectedTrip(trip);
+    setIsModalOpen(true); // Show modal
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedTrip(null);
   };
 
   return (
@@ -99,7 +111,7 @@ function App() {
         </div>
         <div>
           {trips.map((trip, index) => (
-            <div key={index} className="card1">
+            <div key={index} className="card1" onClick={() => handleCardClick(trip)}>
               {getCityLabel(trip.cityA)} - {getCityLabel(trip.cityB)}{" "}
               🕙{trip.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}{" "}
               👤x{trip.peopleCount}{" "}
@@ -111,6 +123,18 @@ function App() {
           Попутчики
         </p>
       </div>
+      {/* Modal - Show trip in center */}
+      {isModalOpen && selectedTrip && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <span className="modal-close" onClick={closeModal}>✖</span>
+            <h2>{getCityLabel(selectedTrip.cityA)} - {getCityLabel(selectedTrip.cityB)}</h2>
+            <p><b>{selectedTrip.userName}</b> ищет попутку</p>
+            <p>🕙 Время выезда: <b>{selectedTrip.date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}</b></p>
+            <p>👤 Количество человек: <b>{selectedTrip.peopleCount}</b></p>
+          </div>
+        </div>
+      )}
     </>
   )
 }
