@@ -52,13 +52,14 @@
 
 .select-container {
   margin-bottom: 3vw;
+  font-size: 4vw;
 }
 
 .select-container label {
   display: block;
   font-weight: thin;
-  margin-bottom: 1vw; /* Adds space between the label and the select */
-  text-align: left; /* Ensure the label is left-aligned */
+  margin-bottom: 1vw;
+  text-align: left;
 }
 
 .react-select__control, .react-select__menu {
@@ -66,10 +67,9 @@
 }
 
 .react-datepicker__input-container input {
-  text-align: center;
-  width: 100%;
+  text-align: left;
   border: 0 solid #ddd;
-  padding: 5vw;
+  padding: 3vw;
   font-size: 4vw;
 }
 

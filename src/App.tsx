@@ -42,8 +42,8 @@ function App() {
             classNamePrefix="react-select"
             placeholder="Выберите город"/>
         </div>
-        <div className="select-container">
-          <label htmlFor="first-select">Когда</label>
+        <div className="container-center">
+          <label>Когда</label>
           <DatePicker
             selected={selectedDate}
             onChange={setSelectedDate}
