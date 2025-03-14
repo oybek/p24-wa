@@ -1,12 +1,12 @@
-import "react-datepicker/dist/react-datepicker.css";
-import './App.css'
+import 'react-datepicker/dist/react-datepicker.css';
+import './App.css';
 import Select from 'react-select';
-import { registerLocale } from "react-datepicker";
-import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
-import { useState, useEffect } from 'react'
+import { registerLocale } from 'react-datepicker';
+import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
+import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { MainButton } from '@twa-dev/sdk/react';
-import WebApp from '@twa-dev/sdk'
+import WebApp from '@twa-dev/sdk';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 const cityList = [
@@ -19,9 +19,9 @@ const cityList = [
 ];
 
 function Create() {
-  const [cityA, setCityA] = useState<any>(null)
-  const [cityB, setCityB] = useState<any>(null)
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
+  const [cityA, setCityA] = useState<any>(null);
+  const [cityB, setCityB] = useState<any>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
 
   const handleSubmit = () => {
@@ -30,47 +30,47 @@ function Create() {
       city_b: cityB.value,
       selected_date: selectedDate,
       passenger_count: passengerCount,
-    }
-    WebApp.sendData(JSON.stringify(data))
+    };
+    WebApp.sendData(JSON.stringify(data));
   };
 
   useEffect(() => {
-    WebApp.ready()
-    WebApp.expand()
+    WebApp.ready();
+    WebApp.expand();
     // TODO
     // 1. Get last search details and set cityA, cityB selectedDate is today
     // 2. Perform the search, update trips
     // 3. Load offers and update proposedPrices
-    console.log("hello")
-    registerLocale('ru', ru)
-  }, [])
+    console.log('hello');
+    registerLocale('ru', ru);
+  }, []);
 
   useEffect(() => {
-    console.log(selectedDate)
+    console.log(selectedDate);
     updateMainButton();
   }, [cityA, cityB, selectedDate, passengerCount]);
 
   const updateMainButton = () => {
     if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
-      WebApp.MainButton.show()
+      WebApp.MainButton.show();
     } else {
-      WebApp.MainButton.hide()
+      WebApp.MainButton.hide();
     }
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    if (value === "" || isNaN(Number(value))) {
-      setPassengerCount('')
+    if (value === '' || isNaN(Number(value))) {
+      setPassengerCount('');
     } else {
-      setPassengerCount(Number(value))
+      setPassengerCount(Number(value));
     }
   };
 
   return (
     <>
       <div className="card">
-        <div style={{ display: 'flex', justifyContent: 'center'}}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
           <DotLottieReact
             src="https://lottie.host/5622d3e3-3d64-451a-a0fd-525e151eae1f/Xwp5xSXNJG.lottie"
             autoplay
@@ -84,9 +84,10 @@ function Create() {
             value={cityA}
             onChange={setCityA}
             options={cityList}
-            isSearchable={true}  // Enable search functionality
+            isSearchable={true} // Enable search functionality
             classNamePrefix="react-select"
-            placeholder="Выберите город"/>
+            placeholder="Выберите город"
+          />
         </div>
         <div className="select-container">
           <label htmlFor="first-select">В город</label>
@@ -94,9 +95,10 @@ function Create() {
             value={cityB}
             onChange={setCityB}
             options={cityList}
-            isSearchable={true}  // Enable search functionality
+            isSearchable={true} // Enable search functionality
             classNamePrefix="react-select"
-            placeholder="Выберите город"/>
+            placeholder="Выберите город"
+          />
         </div>
         <div className="select-container">
           <label>Нужно мест</label>
@@ -119,14 +121,13 @@ function Create() {
             onFocus={(e) => e.target.blur()}
             timeFormat="p"
             dateFormat="dd MMMM YYYY в HH:mm"
-            customInput={<DatePicker readOnly/>}/>
+            customInput={<DatePicker readOnly />}
+          />
         </div>
-        <MainButton
-          text="Отправить"
-          onClick={handleSubmit} />
+        <MainButton text="Отправить" onClick={handleSubmit} />
       </div>
     </>
-  )
+  );
 }
 
-export default Create
+export default Create;

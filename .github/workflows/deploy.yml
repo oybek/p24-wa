@@ -31,7 +31,7 @@ jobs:
 
   deploy:
     permissions:
-      contents: write 
+      contents: write
 
     name: Deploy
     needs: build

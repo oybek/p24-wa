@@ -169,21 +169,23 @@
   border-radius: 3vw !important;
   border-width: 0vw !important;
   background-color: var(--tg-theme-secondary-bg-color) !important;
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }
 
 .react-select__control--is-focused {
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }
 
 .react-select__option--is-selected {
-  background-color: var(--tg-theme-button-color) !important;  /* Set the background color of the selected option */
+  background-color: var(
+    --tg-theme-button-color
+  ) !important; /* Set the background color of the selected option */
 }
 
-input[type="number"] {
+input[type='number'] {
   color: var(--tg-theme-text-color);
   background-color: var(--tg-theme-secondary-bg-color);
 
   border-width: 0;
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }

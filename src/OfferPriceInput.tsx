@@ -8,7 +8,7 @@ function OfferPriceInput() {
     setShowInput(true);
   };
 
-  const handleChange = (e: { target: { value: React.SetStateAction<string>; }; }) => {
+  const handleChange = (e: { target: { value: React.SetStateAction<string> } }) => {
     setValue(e.target.value);
   };
 
@@ -62,6 +62,6 @@ function OfferPriceInput() {
       )}
     </div>
   );
-};
+}
 
 export default OfferPriceInput;
