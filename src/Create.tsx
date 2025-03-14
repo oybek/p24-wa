@@ -1,10 +1,10 @@
 import "react-datepicker/dist/react-datepicker.css";
 import './App.css'
-import DatePicker from 'react-datepicker';
 import Select from 'react-select';
 import { registerLocale } from "react-datepicker";
 import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react'
+import DatePicker from 'react-datepicker';
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -16,10 +16,25 @@ const cityList = [
 ];
 
 function Create() {
+  const tg = window.Telegram.WebApp;
   const [cityA, setCityA] = useState<any>(null)
   const [cityB, setCityB] = useState<any>(null)
-  const [selectedDate, setSelectedDate] = useState<any>(new Date())
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
+
+  const handleSubmit = () => {
+    if (!tg) return;
+
+    const data = {
+      city_a: cityA.value,
+      city_b: cityB.value,
+      selected_date: selectedDate,
+      passenger_count: passengerCount,
+    };
+
+    tg.sendData(JSON.stringify(data)); // Send data to Telegram
+    tg.close(); // Close Web App after sending
+  };
 
   useEffect(() => {
     // TODO
@@ -29,6 +44,23 @@ function Create() {
     console.log("hello")
     registerLocale('ru', ru)
   }, [])
+
+  useEffect(() => {
+    console.log(selectedDate)
+    updateMainButton();
+  }, [cityA, cityB, selectedDate, passengerCount]);
+
+  const updateMainButton = () => {
+    if (!tg) return;
+
+    if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
+      tg.MainButton.setText("Отправить");
+      tg.MainButton.onClick(handleSubmit);
+      tg.MainButton.show();
+    } else {
+      tg.MainButton.hide();
+    }
+  };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -66,14 +98,14 @@ function Create() {
           <label>Когда</label>
           <DatePicker
             selected={selectedDate}
-            onChange={setSelectedDate}
-            showTimeSelect
-            dateFormat="d MMMM yyyy в HH:mm"
-            onFocus={e => e.target.blur()}
-            customInput={<DatePicker readOnly />}
+            onChange={(date) => setSelectedDate(date)}
             locale="ru"
+            showTimeSelect
             timeIntervals={30}
-          />
+            onFocus={(e) => e.target.blur()}
+            timeFormat="p"
+            dateFormat="dd MMMM YYYY в HH:mm"
+            customInput={<DatePicker readOnly/>}/>
         </div>
         <div className="select-container">
           <label>Нужно мест</label>
@@ -84,11 +116,6 @@ function Create() {
             onChange={handlePriceChange}
             placeholder="Кол-во мест"
           />
-        </div>
-        <div className="select-container">
-          <button onClick={function(){}}>
-            Отправить
-          </button>
         </div>
       </div>
     </>
