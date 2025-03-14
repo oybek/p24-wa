@@ -7,6 +7,8 @@ import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker';
 import { MainButton } from '@twa-dev/sdk/react';
 import WebApp from '@twa-dev/sdk'
+import { DotLottiePlayer } from '@dotlottie/react-player';
+import '@dotlottie/react-player/dist/index.css';
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -69,6 +71,14 @@ function Create() {
   return (
     <>
       <div className="card">
+        <div style={{ display: 'flex', justifyContent: 'center'}}>
+          <DotLottiePlayer
+            src="https://lottie.host/5622d3e3-3d64-451a-a0fd-525e151eae1f/Xwp5xSXNJG.lottie"
+            autoplay
+            loop
+            style={{ width: 200 }}
+          />
+        </div>
         <div className="select-container">
           <label htmlFor="first-select">Из города</label>
           <Select

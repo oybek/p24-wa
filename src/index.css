@@ -24,20 +24,12 @@ label {
 
 button {
   border-radius: 2vw;
-  border: 0vw solid transparent;
   padding: 4vw;
   font-size: 4vw;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #ffca28;
+  color: var(--tg-theme-button-text-color);
+  background-color: var(--tg-theme-button-color);
   cursor: pointer;
   transition: border-color 0.25s;
   width: 100%;
-}
-button:hover {
-  background-color: #ffca28;
-}
-button:focus,
-button:focus-visible {
-  outline: 1vw auto -webkit-focus-ring-color;
 }

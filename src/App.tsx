@@ -5,6 +5,7 @@ import Select from 'react-select';
 import { registerLocale } from "react-datepicker";
 import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react'
+import WebApp from '@twa-dev/sdk'
 
 interface Trip {
   id: string;
@@ -52,6 +53,8 @@ function App() {
     // 2. Perform the search, update trips
     // 3. Load offers and update proposedPrices
     console.log("hello")
+    WebApp.ready()
+    WebApp.expand()
     registerLocale('ru', ru)
   }, [])
 
