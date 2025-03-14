@@ -75,7 +75,7 @@ function Create() {
             src="https://lottie.host/5622d3e3-3d64-451a-a0fd-525e151eae1f/Xwp5xSXNJG.lottie"
             autoplay
             loop
-            style={{ width: 200 }}
+            style={{ width: 256 }}
           />
         </div>
         <div className="select-container">
