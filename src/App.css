@@ -1,8 +1,6 @@
 #root {
   width: 100%;
-  margin: 0 auto;
   text-align: left;
-  background-color: #fff;
 }
 
 .logo {
@@ -42,7 +40,7 @@
 }
 
 .select-container {
-  margin-bottom: 3vw;
+  margin-bottom: 5vw;
   font-size: 4vw;
 }
 
@@ -53,15 +51,13 @@
   text-align: left;
 }
 
-.react-select__control, .react-select__menu {
-  border-radius: 1vw !important; /* Set border radius */
-}
-
 .react-datepicker__input-container input {
   text-align: left;
   border: 0 solid #ddd;
   padding: 3vw;
   font-size: 4vw;
+  color: var(--tg-theme-text-color) !important;
+  background-color: var(--tg-theme-bg-color) !important;
 }
 
 .react-datepicker {
@@ -159,4 +155,34 @@
   font-size: 4vw;
   border-radius: 2vw;
   border: 1px solid #ddd;
+}
+
+/* select styles */
+.react-select__control {
+  border-radius: 3vw !important;
+  border-width: 0vw !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+}
+
+.react-select__menu {
+  border-radius: 3vw !important;
+  border-width: 0vw !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
+}
+
+.react-select__control--is-focused {
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
+}
+
+.react-select__option--is-selected {
+  background-color: var(--tg-theme-button-color) !important;  /* Set the background color of the selected option */
+}
+
+input[type="number"] {
+  color: var(--tg-theme-text-color);
+  background-color: var(--tg-theme-secondary-bg-color);
+
+  border-width: 0;
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important; 
 }

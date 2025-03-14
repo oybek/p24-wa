@@ -31,17 +31,17 @@ function Create() {
       passenger_count: passengerCount,
     }
     WebApp.sendData(JSON.stringify(data))
-    WebApp.close()
   };
 
   useEffect(() => {
+    WebApp.ready()
+    WebApp.expand()
     // TODO
     // 1. Get last search details and set cityA, cityB selectedDate is today
     // 2. Perform the search, update trips
     // 3. Load offers and update proposedPrices
     console.log("hello")
     registerLocale('ru', ru)
-    WebApp.expand()
   }, [])
 
   useEffect(() => {
@@ -89,8 +89,18 @@ function Create() {
             classNamePrefix="react-select"
             placeholder="Выберите город"/>
         </div>
-        <div className="container-center">
-          <label>Когда</label>
+        <div className="select-container">
+          <label>Нужно мест</label>
+          <input
+            type="number"
+            id="passenger-count"
+            value={passengerCount}
+            onChange={handlePriceChange}
+            placeholder="Кол-во мест"
+          />
+        </div>
+        <div>
+          <label>Когда:</label>
           <DatePicker
             selected={selectedDate}
             onChange={(date) => setSelectedDate(date)}
@@ -101,16 +111,6 @@ function Create() {
             timeFormat="p"
             dateFormat="dd MMMM YYYY в HH:mm"
             customInput={<DatePicker readOnly/>}/>
-        </div>
-        <div className="select-container">
-          <label>Нужно мест</label>
-          <input
-            type="number"
-            id="passenger-count"
-            value={passengerCount}
-            onChange={handlePriceChange}
-            placeholder="Кол-во мест"
-          />
         </div>
         <MainButton
           text="Отправить"
