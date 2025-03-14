@@ -5,6 +5,8 @@ import { registerLocale } from "react-datepicker";
 import { ru } from "date-fns/locale/ru"; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react'
 import DatePicker from 'react-datepicker';
+import { MainButton } from '@twa-dev/sdk/react';
+import WebApp from '@twa-dev/sdk'
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -16,24 +18,20 @@ const cityList = [
 ];
 
 function Create() {
-  const tg = window.Telegram.WebApp;
   const [cityA, setCityA] = useState<any>(null)
   const [cityB, setCityB] = useState<any>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
 
   const handleSubmit = () => {
-    if (!tg) return;
-
     const data = {
       city_a: cityA.value,
       city_b: cityB.value,
       selected_date: selectedDate,
       passenger_count: passengerCount,
-    };
-
-    tg.sendData(JSON.stringify(data)); // Send data to Telegram
-    tg.close(); // Close Web App after sending
+    }
+    WebApp.sendData(JSON.stringify(data))
+    WebApp.close()
   };
 
   useEffect(() => {
@@ -43,6 +41,7 @@ function Create() {
     // 3. Load offers and update proposedPrices
     console.log("hello")
     registerLocale('ru', ru)
+    WebApp.expand()
   }, [])
 
   useEffect(() => {
@@ -51,14 +50,10 @@ function Create() {
   }, [cityA, cityB, selectedDate, passengerCount]);
 
   const updateMainButton = () => {
-    if (!tg) return;
-
     if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
-      tg.MainButton.setText("Отправить");
-      tg.MainButton.onClick(handleSubmit);
-      tg.MainButton.show();
+      WebApp.MainButton.show()
     } else {
-      tg.MainButton.hide();
+      WebApp.MainButton.hide()
     }
   };
 
@@ -117,6 +112,9 @@ function Create() {
             placeholder="Кол-во мест"
           />
         </div>
+        <MainButton
+          text="Отправить"
+          onClick={handleSubmit} />
       </div>
     </>
   )

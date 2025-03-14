@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@twa-dev/sdk": "^8.0.2",
     "@types/telegram-web-app": "^7.10.1",
     "date-fns": "^4.1.0",
     "react": "^19.0.0",
