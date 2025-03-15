@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { MainButton } from '@twa-dev/sdk/react';
 import WebApp from '@twa-dev/sdk';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import logo from "./assets/car.webp";
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -74,12 +74,7 @@ function Create() {
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <DotLottieReact
-            src="https://lottie.host/5622d3e3-3d64-451a-a0fd-525e151eae1f/Xwp5xSXNJG.lottie"
-            autoplay
-            loop
-            style={{ width: 256 }}
-          />
+          <img src={logo} style={{ width: 180 }}/>
         </div>
         <div className="select-container">
           <label htmlFor="first-select">Из города</label>
