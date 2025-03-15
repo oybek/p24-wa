@@ -46,20 +46,23 @@ function Create() {
     // 1. Get last search details and set cityA, cityB selectedDate is today
     // 2. Perform the search, update trips
     // 3. Load offers and update proposedPrices
-    console.log('hello');
+    updateMainButton();
+    WebApp.MainButton.show();
     registerLocale('ru', ru);
   }, []);
 
   useEffect(() => {
     console.log(selectedDate);
     updateMainButton();
-  }, [cityA, cityB, selectedDate, passengerCount]);
+  }, [cityA, cityB, selectedDate, passengerCount, phone]);
 
   const updateMainButton = () => {
     if (cityA && cityB && selectedDate && Number(passengerCount) > 0 && phone && phone.length > 0) {
-      WebApp.MainButton.show();
+      WebApp.MainButton.setParams({color:"#4bb254"});
+      WebApp.MainButton.enable();
     } else {
-      WebApp.MainButton.hide();
+      WebApp.MainButton.setParams({color:"#3b3b3b"});
+      WebApp.MainButton.disable();
     }
   };
 
@@ -89,7 +92,7 @@ function Create() {
             onChange={(date) => setSelectedDate(date)}
             locale="ru"
             showTimeSelect
-            timeIntervals={30}
+            timeIntervals={60}
             onFocus={(e) => e.target.blur()}
             timeFormat="p"
             dateFormat="dd MMMM YYYY в HH:mm"
