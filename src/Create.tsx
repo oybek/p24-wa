@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { MainButton } from '@twa-dev/sdk/react';
 import WebApp from '@twa-dev/sdk';
-import logo from "./assets/car.webp";
+import logo from "./assets/logo.gif";
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
