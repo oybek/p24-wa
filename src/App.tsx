@@ -85,7 +85,7 @@ function App() {
       city_b: cityB.value,
       date: selectedDate.toISOString(),  // Convert Date object to ISO string
     });
-    axios.get<Trip[]>(`http://localhost:5555/trips?${params.toString()}`)
+    axios.get<Trip[]>(`https://booklink.pro/p24/trips?${params.toString()}`)
       .then((response) => {
         console.log(response.data);
         if (response.data) {
@@ -97,8 +97,8 @@ function App() {
         } else {
           setTrips([]);
         }
+        setTrips(trips.concat(testTrips))
       })
-    setTrips(trips.concat(testTrips))
   };
 
   const handleCardClick = (trip: Trip) => {
