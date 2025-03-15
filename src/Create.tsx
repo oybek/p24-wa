@@ -28,8 +28,11 @@ function Create() {
     const data = {
       city_a: cityA.value,
       city_b: cityB.value,
-      selected_date: selectedDate,
+      start_time: selectedDate,
       passenger_count: passengerCount,
+      meta: {
+        time_offset: -new Date().getTimezoneOffset() / 60,
+      },
     };
     WebApp.sendData(JSON.stringify(data));
   };

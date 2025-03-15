@@ -20,7 +20,7 @@ function UserTypeRouter() {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <Router basename="/thumbups-webapp">
+  <Router basename="/p24-wa">
     <Routes>
       <Route path="/" element={<UserTypeRouter />} />
     </Routes>

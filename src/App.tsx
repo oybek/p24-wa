@@ -6,58 +6,16 @@ import { registerLocale } from 'react-datepicker';
 import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
+import axios from 'axios';
 
 interface Trip {
-  id: string;
-  cityA: string;
-  cityB: string;
-  date: Date;
-  peopleCount: number;
-  userName: string;
+  _id: string;
+  city_a: string;
+  city_b: string;
+  start_time: Date;
+  passenger_count: number;
+  chat_id: string;
 }
-
-const testTrips: Trip[] = [
-  {
-    id: '1',
-    cityA: 'bishkek',
-    cityB: 'karakol',
-    date: new Date('2025-03-13T08:30:00'),
-    peopleCount: 4,
-    userName: 'Aybek',
-  },
-  {
-    id: '2',
-    cityA: 'bishkek',
-    cityB: 'karakol',
-    date: new Date('2025-03-13T14:45:00'),
-    peopleCount: 2,
-    userName: 'Beksultan',
-  },
-  {
-    id: '3',
-    cityA: 'bishkek',
-    cityB: 'karakol',
-    date: new Date('2025-03-13T19:15:00'),
-    peopleCount: 5,
-    userName: 'Nurbek',
-  },
-  {
-    id: '4',
-    cityA: 'bishkek',
-    cityB: 'karakol',
-    date: new Date('2025-03-13T06:00:00'),
-    peopleCount: 3,
-    userName: 'John',
-  },
-  {
-    id: '5',
-    cityA: 'bishkek',
-    cityB: 'karakol',
-    date: new Date('2025-03-13T23:45:00'),
-    peopleCount: 6,
-    userName: 'Oliver',
-  },
-];
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -88,22 +46,31 @@ function App() {
     // 2. Perform the search, update trips
     // 3. Load offers and update proposedPrices
     console.log('hello');
+
     WebApp.ready();
     WebApp.expand();
     registerLocale('ru', ru);
   }, []);
 
   const filterTrips = () => {
-    const filteredTrips = testTrips.filter((trip) => {
-      const matchesCityA = cityA ? trip.cityA === cityA.value : false;
-      const matchesCityB = cityB ? trip.cityB === cityB.value : false;
-      const matchesDate = selectedDate
-        ? trip.date.toDateString() === selectedDate.toDateString()
-        : true;
-      return matchesCityA && matchesCityB && matchesDate;
+    const params = new URLSearchParams({
+      city_a: cityA.value,
+      city_b: cityB.value,
+      date: selectedDate.toISOString(),  // Convert Date object to ISO string
     });
-    const sortedTrips = filteredTrips.sort((a, b) => a.date.getTime() - b.date.getTime());
-    setTrips(sortedTrips);
+    axios.get<Trip[]>(`http://localhost:5555/trips?${params.toString()}`)
+      .then((response) => {
+        console.log(response.data);
+        if (response.data) {
+          const parsedTrips = response.data?.map((trip: any) => ({
+            ...trip,
+            start_time: new Date(trip.start_time),  // Convert start_time to Date object
+          }));
+          setTrips(parsedTrips);
+        } else {
+          setTrips([]);
+        }
+      })
   };
 
   const handleCardClick = (trip: Trip) => {
@@ -121,7 +88,7 @@ function App() {
     if (!isNaN(Number(value)) && selectedTrip) {
       setProposedPrices(
         (prevPrices) =>
-          new Map(prevPrices.set(selectedTrip.id, value === '' ? null : Number(value))),
+          new Map(prevPrices.set(selectedTrip._id, value === '' ? null : Number(value))),
       );
     }
   };
@@ -174,7 +141,7 @@ function App() {
         </div>
         <div>
           {trips.map((trip, index) => {
-            const proposedPrice = proposedPrices.get(trip.id);
+            const proposedPrice = proposedPrices.get(trip._id);
             const isPriceProposed = proposedPrice !== null && proposedPrice !== undefined;
             return (
               <div
@@ -182,13 +149,13 @@ function App() {
                 className={`card1 ${isPriceProposed ? 'has-proposed-price' : ''}`}
                 onClick={() => handleCardClick(trip)}
               >
-                {getCityLabel(trip.cityA)} - {getCityLabel(trip.cityB)} 🕙
-                {trip.date.toLocaleTimeString([], {
+                {getCityLabel(trip.city_a)} - {getCityLabel(trip.city_b)} 🕙
+                {trip.start_time.toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: false,
                 })}{' '}
-                👤x{trip.peopleCount} <b>{trip.userName}</b>
+                👤x{trip.passenger_count} <b>{trip.chat_id}</b>
               </div>
             );
           })}
@@ -203,15 +170,15 @@ function App() {
               ✖
             </span>
             <h2>
-              {getCityLabel(selectedTrip.cityA)} - {getCityLabel(selectedTrip.cityB)}
+              {getCityLabel(selectedTrip.city_a)} - {getCityLabel(selectedTrip.city_b)}
             </h2>
             <p>
-              <b>{selectedTrip.userName}</b> ищет попутку
+              <b>{selectedTrip.chat_id}</b> ищет попутку
             </p>
             <p>
               🕙 Время выезда:{' '}
               <b>
-                {selectedTrip.date.toLocaleTimeString([], {
+                {selectedTrip.start_time.toLocaleTimeString([], {
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: false,
@@ -219,7 +186,7 @@ function App() {
               </b>
             </p>
             <p>
-              👤 Количество человек: <b>{selectedTrip.peopleCount}</b>
+              👤 Количество человек: <b>{selectedTrip.passenger_count}</b>
             </p>
             {/* Price input field */}
             <div className="price-input-container">
@@ -229,7 +196,7 @@ function App() {
               <input
                 type="number"
                 id="price"
-                value={proposedPrices.get(selectedTrip.id) || ''}
+                value={proposedPrices.get(selectedTrip._id) || ''}
                 onChange={handlePriceChange}
                 placeholder="Цена"
               />
