@@ -23,6 +23,7 @@ function Create() {
   const [cityB, setCityB] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
+  const [phone, setPhone] = useState<string>("");
 
   const handleSubmit = () => {
     const data = {
@@ -30,6 +31,7 @@ function Create() {
       city_b: cityB.value,
       start_time: selectedDate,
       passenger_count: passengerCount,
+      phone: phone,
       meta: {
         time_offset: -new Date().getTimezoneOffset() / 60,
       },
@@ -54,7 +56,7 @@ function Create() {
   }, [cityA, cityB, selectedDate, passengerCount]);
 
   const updateMainButton = () => {
-    if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
+    if (cityA && cityB && selectedDate && Number(passengerCount) > 0 && phone && phone.length > 0) {
       WebApp.MainButton.show();
     } else {
       WebApp.MainButton.hide();
@@ -70,11 +72,29 @@ function Create() {
     }
   };
 
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
+
   return (
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           <img src={logo} style={{ width: 180 }}/>
+        </div>
+        <div>
+          <label>Когда:</label>
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            locale="ru"
+            showTimeSelect
+            timeIntervals={30}
+            onFocus={(e) => e.target.blur()}
+            timeFormat="p"
+            dateFormat="dd MMMM YYYY в HH:mm"
+            customInput={<DatePicker readOnly />}
+          />
         </div>
         <div className="select-container">
           <label htmlFor="first-select">Из города</label>
@@ -108,18 +128,14 @@ function Create() {
             placeholder="Кол-во мест"
           />
         </div>
-        <div>
-          <label>Когда:</label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            locale="ru"
-            showTimeSelect
-            timeIntervals={30}
-            onFocus={(e) => e.target.blur()}
-            timeFormat="p"
-            dateFormat="dd MMMM YYYY в HH:mm"
-            customInput={<DatePicker readOnly />}
+        <div className="select-container">
+          <label>Номер телефона</label>
+          <input
+            type="number"
+            id="phone"
+            value={phone}
+            onChange={handlePhoneChange}
+            placeholder="0555123456"
           />
         </div>
         <MainButton text="Отправить" onClick={handleSubmit} />
