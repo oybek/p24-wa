@@ -31,6 +31,33 @@ const getCityLabel = (cityValue: string) => {
   return city ? city.label : cityValue;
 };
 
+const testTrips: Trip[] = [
+  {
+    _id: "1",
+    city_a: "bishkek",
+    city_b: "karakol",
+    start_time: new Date("2025-03-16T08:00:00"),
+    passenger_count: 4,
+    chat_id: "chat123"
+  },
+  {
+    _id: "2",
+    city_a: "bishkek",
+    city_b: "karakol",
+    start_time: new Date("2025-03-16T09:00:00"),
+    passenger_count: 4,
+    chat_id: "chat123"
+  },
+  {
+    _id: "3",
+    city_a: "bishkek",
+    city_b: "karakol",
+    start_time: new Date("2025-03-16T10:30:00"),
+    passenger_count: 4,
+    chat_id: "chat123"
+  },
+]
+
 function App() {
   const [cityA, setCityA] = useState<any>(null);
   const [cityB, setCityB] = useState<any>(null);
@@ -71,6 +98,7 @@ function App() {
           setTrips([]);
         }
       })
+    setTrips(trips.concat(testTrips))
   };
 
   const handleCardClick = (trip: Trip) => {
