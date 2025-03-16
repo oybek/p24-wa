@@ -33,30 +33,30 @@ const getCityLabel = (cityValue: string) => {
 
 const testTrips: Trip[] = [
   {
-    _id: "1",
-    city_a: "bishkek",
-    city_b: "karakol",
-    start_time: new Date("2025-03-16T08:00:00"),
+    _id: '1',
+    city_a: 'bishkek',
+    city_b: 'karakol',
+    start_time: new Date('2025-03-16T08:00:00'),
     passenger_count: 4,
-    chat_id: "chat123"
+    chat_id: 'chat123',
   },
   {
-    _id: "2",
-    city_a: "bishkek",
-    city_b: "karakol",
-    start_time: new Date("2025-03-16T09:00:00"),
+    _id: '2',
+    city_a: 'bishkek',
+    city_b: 'karakol',
+    start_time: new Date('2025-03-16T09:00:00'),
     passenger_count: 4,
-    chat_id: "chat123"
+    chat_id: 'chat123',
   },
   {
-    _id: "3",
-    city_a: "bishkek",
-    city_b: "karakol",
-    start_time: new Date("2025-03-16T10:30:00"),
+    _id: '3',
+    city_a: 'bishkek',
+    city_b: 'karakol',
+    start_time: new Date('2025-03-16T10:30:00'),
     passenger_count: 4,
-    chat_id: "chat123"
+    chat_id: 'chat123',
   },
-]
+];
 
 function App() {
   const [cityA, setCityA] = useState<any>(null);
@@ -83,22 +83,21 @@ function App() {
     const params = new URLSearchParams({
       city_a: cityA.value,
       city_b: cityB.value,
-      date: selectedDate.toISOString(),  // Convert Date object to ISO string
+      date: selectedDate.toISOString(), // Convert Date object to ISO string
     });
-    axios.get<Trip[]>(`https://booklink.pro/p24/trips?${params.toString()}`)
-      .then((response) => {
-        console.log(response.data);
-        if (response.data) {
-          const parsedTrips = response.data?.map((trip: any) => ({
-            ...trip,
-            start_time: new Date(trip.start_time),  // Convert start_time to Date object
-          }));
-          setTrips(parsedTrips);
-        } else {
-          setTrips([]);
-        }
-        setTrips(trips.concat(testTrips))
-      })
+    axios.get<Trip[]>(`https://booklink.pro/p24/trips?${params.toString()}`).then((response) => {
+      console.log(response.data);
+      if (response.data) {
+        const parsedTrips = response.data?.map((trip: any) => ({
+          ...trip,
+          start_time: new Date(trip.start_time), // Convert start_time to Date object
+        }));
+        setTrips(parsedTrips);
+      } else {
+        setTrips([]);
+      }
+      setTrips(trips.concat(testTrips));
+    });
   };
 
   const handleCardClick = (trip: Trip) => {

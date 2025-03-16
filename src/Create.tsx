@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import { MainButton } from '@twa-dev/sdk/react';
 import WebApp from '@twa-dev/sdk';
-import logo from "./assets/logo.gif";
+import logo from './assets/logo.gif';
 
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
@@ -26,13 +26,17 @@ const cityList = [
   { value: 'suluktu', label: 'Сулюкта' },
 ];
 
+type CreateComponentProps = {
+  isAdmin: boolean;
+};
 
-function Create() {
+function Create({ isAdmin }: CreateComponentProps) {
   const [cityA, setCityA] = useState<any>(null);
   const [cityB, setCityB] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
-  const [phone, setPhone] = useState<string>("");
+  const [phone, setPhone] = useState<string>('');
+  const [name, setName] = useState<string>('');
 
   const handleSubmit = () => {
     const data = {
@@ -41,6 +45,7 @@ function Create() {
       start_time: selectedDate,
       passenger_count: passengerCount,
       phone: phone,
+      passenger_name: name,
       meta: {
         time_offset: -new Date().getTimezoneOffset() / 60,
       },
@@ -67,10 +72,10 @@ function Create() {
 
   const updateMainButton = () => {
     if (cityA && cityB && selectedDate && Number(passengerCount) > 0 && phone && phone.length > 0) {
-      WebApp.MainButton.setParams({color:"#4bb254"});
+      WebApp.MainButton.setParams({ color: '#4bb254' });
       WebApp.MainButton.enable();
     } else {
-      WebApp.MainButton.setParams({color:"#3b3b3b"});
+      WebApp.MainButton.setParams({ color: '#3b3b3b' });
       WebApp.MainButton.disable();
     }
   };
@@ -88,11 +93,15 @@ function Create() {
     setPhone(e.target.value);
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
   return (
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} style={{ width: 180 }}/>
+          <img src={logo} style={{ width: 180 }} />
         </div>
         <div>
           <label>Когда:</label>
@@ -150,6 +159,20 @@ function Create() {
             placeholder="0555123456"
           />
         </div>
+        {isAdmin ? (
+          <div className="select-container">
+            <label>Номер телефона</label>
+            <input
+              type="text"
+              id="name"
+              value={name}
+              onChange={handleNameChange}
+              placeholder="Имя"
+            />
+          </div>
+        ) : (
+          <></>
+        )}
         <MainButton text="Отправить" onClick={handleSubmit} />
       </div>
     </>

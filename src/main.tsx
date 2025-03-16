@@ -13,7 +13,9 @@ function UserTypeRouter() {
   if (userType === 'driver') {
     return <App />;
   } else if (userType === 'user') {
-    return <Create />;
+    return <Create isAdmin={false} />;
+  } else if (userType === 'admin') {
+    return <Create isAdmin={true} />;
   } else {
     return <div>404</div>;
   }
