@@ -1,15 +1,20 @@
-import 'react-datepicker/dist/react-datepicker.css';
-import './App.css';
-import Select from 'react-select';
-import { registerLocale } from 'react-datepicker';
-import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
-import { useState, useEffect } from 'react';
-import DatePicker from 'react-datepicker';
-import { MainButton } from '@twa-dev/sdk/react';
 import WebApp from '@twa-dev/sdk';
+import { MainButton } from '@twa-dev/sdk/react';
+import axios from 'axios';
+import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
+import { useEffect, useState } from 'react';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
+import './App.css';
 import logo from './assets/logo.gif';
 
-const cityList = [
+interface City {
+  value: string;
+  label: string;
+}
+
+const fallbackCityList: City[] = [
   { value: 'bishkek', label: 'Бишкек' },
   { value: 'osh', label: 'Ош' },
   { value: 'jalal-abad', label: 'Джалал-Абад' },
@@ -33,12 +38,32 @@ type CreateComponentProps = {
 };
 
 function Create({ isAdmin }: CreateComponentProps) {
+  // states
+  const [cityList, setCityList] = useState<City[]>([]);
   const [cityA, setCityA] = useState<any>(null);
   const [cityB, setCityB] = useState<any>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
   const [phone, setPhone] = useState<string>('');
   const [name, setName] = useState<string>('');
+
+  // functions
+  const fetchCityList = () => {
+    axios.get<City[]>(`https://booklink.pro/p24/cities`).then((response) => {
+      if (response.data) {
+        const parsedCityList = response.data?.map(
+          (trip: any) =>
+            ({
+              value: trip.key,
+              label: trip.value,
+            }) as City,
+        );
+        setCityList(parsedCityList);
+      } else {
+        setCityList(fallbackCityList);
+      }
+    });
+  };
 
   const handleSubmit = () => {
     const data = {
@@ -55,15 +80,13 @@ function Create({ isAdmin }: CreateComponentProps) {
     WebApp.sendData(JSON.stringify(data));
   };
 
+  // effects
   useEffect(() => {
     WebApp.ready();
     WebApp.expand();
-    // TODO
-    // 1. Get last search details and set cityA, cityB selectedDate is today
-    // 2. Perform the search, update trips
-    // 3. Load offers and update proposedPrices
     updateMainButton();
     WebApp.MainButton.show();
+    fetchCityList();
     registerLocale('ru', ru);
   }, []);
 
