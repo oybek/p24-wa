@@ -72,7 +72,7 @@ function Create({ isAdmin }: CreateComponentProps) {
   }, [cityA, cityB, selectedDate, passengerCount, phone]);
 
   const updateMainButton = () => {
-    if (cityA && cityB && selectedDate && Number(passengerCount) > 0 && phone && phone.length > 0) {
+    if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
       WebApp.MainButton.setParams({ color: '#4bb254' });
       WebApp.MainButton.enable();
     } else {
@@ -151,7 +151,7 @@ function Create({ isAdmin }: CreateComponentProps) {
           />
         </div>
         <div className="select-container">
-          <label>Номер телефона</label>
+          <label>Телефон (Оставьте пустым - свяжутся в ЛС)</label>
           <input
             type="number"
             id="phone"
