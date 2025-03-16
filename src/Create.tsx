@@ -12,11 +12,20 @@ import logo from "./assets/logo.gif";
 const cityList = [
   { value: 'bishkek', label: 'Бишкек' },
   { value: 'osh', label: 'Ош' },
+  { value: 'jalal-abad', label: 'Джалал-Абад' },
   { value: 'karakol', label: 'Каракол' },
   { value: 'naryn', label: 'Нарын' },
   { value: 'talas', label: 'Талас' },
   { value: 'batken', label: 'Баткен' },
+  { value: 'tokmok', label: 'Токмок' },
+  { value: 'karabalta', label: 'Кара-Балта' },
+  { value: 'kant', label: 'Кант' },
+  { value: 'balykchy', label: 'Балыкчы' },
+  { value: 'isfana', label: 'Исфана' },
+  { value: 'kokjangak', label: 'Кок-Жангак' },
+  { value: 'suluktu', label: 'Сулюкта' },
 ];
+
 
 function Create() {
   const [cityA, setCityA] = useState<any>(null);
