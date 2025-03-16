@@ -25,6 +25,7 @@ const cityList = [
   { value: 'kokjangak', label: 'Кок-Жангак' },
   { value: 'suluktu', label: 'Сулюкта' },
   { value: 'cholpon-ata', label: 'Чолпон-Ата' },
+  { value: 'shamaldy-say', label: 'Шамалды-Сай' },
 ];
 
 type CreateComponentProps = {
