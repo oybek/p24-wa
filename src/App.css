@@ -158,28 +158,54 @@
   border: 1px solid #ddd;
 }
 
-/* select styles */
 .react-select__control {
   border-radius: 2vw !important;
   border-width: 0vw !important;
   background-color: var(--tg-theme-secondary-bg-color) !important;
+  border-color: var(--tg-theme-hint-color) !important;
+  color: var(--tg-theme-text-color) !important;
+}
+
+.react-select__single-value {
+  color: var(--tg-theme-text-color) !important;
 }
 
 .react-select__menu {
+  color: var(--tg-theme-text-color);
   border-radius: 3vw !important;
   border-width: 0vw !important;
   background-color: var(--tg-theme-secondary-bg-color) !important;
   box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }
 
+.react-select__input-container {
+  color: var(--tg-theme-text-color) !important;
+}
+
 .react-select__control--is-focused {
   box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
+}
+
+.react-select__control--is-hover {
+  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
+}
+
+.react-select__option {
+  border-radius: 2vw !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-text-color) !important;
+}
+
+.react-select__placeholder {
+  color: var(--tg-theme-hint-color) !important;
 }
 
 .react-select__option--is-selected {
   background-color: var(
     --tg-theme-button-color
   ) !important; /* Set the background color of the selected option */
+  color: var(--tg-theme-button-text-color) !important;
+
 }
 
 input[type='number'] {
