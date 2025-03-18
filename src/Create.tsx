@@ -143,6 +143,17 @@ function Create({ isAdmin }: CreateComponentProps) {
           />
         </div>
         <div className="select-container">
+          <label>Нужно мест</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            id="passenger-count"
+            value={passengerCount}
+            onChange={handlePriceChange}
+            placeholder="Кол-во мест"
+          />
+        </div>
+        <div className="select-container">
           <label htmlFor="first-select">Из города</label>
           <Select
             value={cityA}
@@ -165,19 +176,10 @@ function Create({ isAdmin }: CreateComponentProps) {
           />
         </div>
         <div className="select-container">
-          <label>Нужно мест</label>
-          <input
-            type="number"
-            id="passenger-count"
-            value={passengerCount}
-            onChange={handlePriceChange}
-            placeholder="Кол-во мест"
-          />
-        </div>
-        <div className="select-container">
           <label>Телефон (Оставьте пустым - свяжутся в ЛС)</label>
           <input
             type="number"
+            inputMode="numeric"
             id="phone"
             value={phone}
             onChange={handlePhoneChange}
@@ -186,7 +188,7 @@ function Create({ isAdmin }: CreateComponentProps) {
         </div>
         {isAdmin ? (
           <div className="select-container">
-            <label>Номер телефона</label>
+            <label>Имя</label>
             <input
               type="text"
               id="name"
