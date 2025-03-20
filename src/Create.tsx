@@ -70,9 +70,9 @@ function Create({ isAdmin }: CreateComponentProps) {
       city_a: cityA.value,
       city_b: cityB.value,
       start_time: selectedDate,
-      passenger_count: passengerCount,
+      seat_count: passengerCount,
       phone: phone,
-      passenger_name: name,
+      user_name: name,
       meta: {
         time_offset: -new Date().getTimezoneOffset() / 60,
       },
@@ -143,14 +143,14 @@ function Create({ isAdmin }: CreateComponentProps) {
           />
         </div>
         <div className="select-container">
-          <label>Нужно мест</label>
+          <label>Сколько мест</label>
           <input
             type="number"
             inputMode="numeric"
             id="passenger-count"
             value={passengerCount}
             onChange={handlePriceChange}
-            placeholder="Кол-во мест"
+            placeholder="Число мест"
           />
         </div>
         <div className="select-container">
