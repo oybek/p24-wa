@@ -185,3 +185,11 @@ input[type='number'] {
   border-width: 0;
   box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }
+
+.card input {
+  width: 97%;
+  padding: 1vw;
+  font-size: 4.5vw;
+  text-align: center;
+  border-radius: 2vw;
+}

@@ -114,7 +114,10 @@ function Search() {
           {trips.map((trip) => (
             <div className="card1">
               <img src={trip1} alt={'🐢'} loading="lazy" />
-              <button className="btn">{trip.phone}</button>
+              <input
+                type="number"
+                value={trip.phone}
+                readOnly/>
             </div>
           ))}
         </div>
