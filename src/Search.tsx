@@ -12,13 +12,28 @@ interface Trip {
   phone: string;
 }
 
-const cityList = [
+interface City {
+  value: string;
+  label: string;
+}
+
+const fallbackCityList: City[] = [
   { value: 'bishkek', label: 'Бишкек' },
   { value: 'osh', label: 'Ош' },
+  { value: 'jalal-abad', label: 'Джалал-Абад' },
   { value: 'karakol', label: 'Каракол' },
   { value: 'naryn', label: 'Нарын' },
   { value: 'talas', label: 'Талас' },
   { value: 'batken', label: 'Баткен' },
+  { value: 'tokmok', label: 'Токмок' },
+  { value: 'karabalta', label: 'Кара-Балта' },
+  { value: 'kant', label: 'Кант' },
+  { value: 'balykchy', label: 'Балыкчы' },
+  { value: 'isfana', label: 'Исфана' },
+  { value: 'kokjangak', label: 'Кок-Жангак' },
+  { value: 'suluktu', label: 'Сулюкта' },
+  { value: 'cholpon-ata', label: 'Чолпон-Ата' },
+  { value: 'shamaldy-say', label: 'Шамалды-Сай' },
 ];
 
 const userTypeSelectOptions = [
@@ -28,10 +43,29 @@ const userTypeSelectOptions = [
 
 function Search() {
   // states
+  const [cityList, setCityList] = useState<City[]>([]);
   const [userType, setUserType] = useState<any>(userTypeSelectOptions[0]);
   const [cityA, setCityA] = useState<any>({ value: 'bishkek', label: 'Бишкек' });
   const [cityB, setCityB] = useState<any>({ value: 'karakol', label: 'Каракол' });
   const [trips, setTrips] = useState<Trip[]>([]);
+
+  // functions
+  const fetchCityList = () => {
+    axios.get<City[]>(`https://booklink.pro/p24/cities`).then((response) => {
+      if (response.data) {
+        const parsedCityList = response.data?.map(
+          (trip: any) =>
+            ({
+              value: trip.key,
+              label: trip.value,
+            }) as City,
+        );
+        setCityList(parsedCityList);
+      } else {
+        setCityList(fallbackCityList);
+      }
+    });
+  };
 
   // functions
   const filterTrips = () => {
@@ -56,6 +90,7 @@ function Search() {
     WebApp.ready();
     WebApp.expand();
     filterTrips();
+    fetchCityList();
   }, []);
 
   useEffect(() => {
