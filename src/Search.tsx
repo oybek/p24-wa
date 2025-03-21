@@ -10,11 +10,7 @@ import trip1 from './assets/trip1.jpg';
 
 interface Trip {
   _id: string;
-  city_a: string;
-  city_b: string;
-  start_time: Date;
-  passenger_count: number;
-  chat_id: string;
+  phone: string;
 }
 
 const cityList = [
@@ -34,33 +30,26 @@ const userTypeSelectOptions = [
 const testTrips: Trip[] = [
   {
     _id: '1',
-    city_a: 'bishkek',
-    city_b: 'karakol',
-    start_time: new Date('2025-03-16T08:00:00'),
-    passenger_count: 4,
-    chat_id: 'chat123',
+    phone: '0559171775',
+  },
+  {
+    _id: '1',
+    phone: '0559171775',
+  },
+  {
+    _id: '1',
+    phone: '0559171775',
   },
 ];
 
 function Search() {
+  // states
   const [userType, setUserType] = useState<any>(userTypeSelectOptions[0]);
-  const [cityA, setCityA] = useState<any>(null);
-  const [cityB, setCityB] = useState<any>(null);
+  const [cityA, setCityA] = useState<any>({ value: 'bishkek', label: 'Бишкек' });
+  const [cityB, setCityB] = useState<any>({ value: 'karakol', label: 'Каракол' });
   const [trips, setTrips] = useState<Trip[]>([]);
 
-  useEffect(() => {
-    // TODO
-    // 1. Get last search details and set cityA, cityB selectedDate is today
-    // 2. Perform the search, update trips
-    // 3. Load offers and update proposedPrices
-    console.log('hello');
-
-    WebApp.ready();
-    WebApp.expand();
-    registerLocale('ru', ru);
-    WebApp.showAlert('hello');
-  }, []);
-
+  // functions
   const filterTrips = () => {
     const params = new URLSearchParams({
       city_a: cityA.value,
@@ -70,11 +59,7 @@ function Search() {
     axios.get<Trip[]>(`https://booklink.pro/p24/trips?${params.toString()}`).then((response) => {
       console.log(response.data);
       if (response.data) {
-        const parsedTrips = response.data?.map((trip: any) => ({
-          ...trip,
-          start_time: new Date(trip.start_time), // Convert start_time to Date object
-        }));
-        setTrips(parsedTrips);
+        setTrips(response.data);
       } else {
         setTrips([]);
       }
@@ -82,7 +67,13 @@ function Search() {
     setTrips(trips.concat(testTrips));
   };
 
-  filterTrips
+  // effects
+  useEffect(() => {
+    registerLocale('ru', ru);
+    WebApp.ready();
+    WebApp.expand();
+    filterTrips();
+  }, []);
 
   return (
     <>
@@ -120,10 +111,12 @@ function Search() {
           />
         </div>
         <div>
-          <div className="card1">
-            <img src={trip1} alt={'🐢'} loading="lazy" />
-            <button className="btn">Показать номер</button>
-          </div>
+          {trips.map((trip) => (
+            <div className="card1">
+              <img src={trip1} alt={'🐢'} loading="lazy" />
+              <button className="btn">{trip.phone}</button>
+            </div>
+          ))}
         </div>
       </div>
     </>
