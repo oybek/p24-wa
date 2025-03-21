@@ -6,7 +6,6 @@ import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
 import { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import axios from 'axios';
-import trip1 from './assets/trip1.jpg';
 
 interface Trip {
   _id: string;
@@ -24,22 +23,7 @@ const cityList = [
 
 const userTypeSelectOptions = [
   { value: 'driver', label: 'Водителя' },
-  { value: 'passenger', label: 'Пассажира' },
-];
-
-const testTrips: Trip[] = [
-  {
-    _id: '1',
-    phone: '0559171775',
-  },
-  {
-    _id: '1',
-    phone: '0559171775',
-  },
-  {
-    _id: '1',
-    phone: '0559171775',
-  },
+  { value: 'user', label: 'Пассажира' },
 ];
 
 function Search() {
@@ -64,7 +48,6 @@ function Search() {
         setTrips([]);
       }
     });
-    setTrips(trips.concat(testTrips));
   };
 
   // effects
@@ -74,6 +57,10 @@ function Search() {
     WebApp.expand();
     filterTrips();
   }, []);
+
+  useEffect(() => {
+    filterTrips();
+  }, [userType, cityA, cityB]);
 
   return (
     <>
@@ -113,12 +100,12 @@ function Search() {
         <div>
           {trips.map((trip) => (
             <div className="card1">
-              <img src={trip1} alt={'🐢'} loading="lazy" />
-              <input
-                className="card-input"
-                type="number"
-                value={trip.phone}
-                readOnly/>
+              <img
+                src={`https://booklink.pro/p24/cards?id=${trip._id}`}
+                alt={'🐢'}
+                loading="lazy"
+              />
+              <input className="card-input" type="number" value={trip.phone} readOnly />
             </div>
           ))}
         </div>
