@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App.tsx';
+import Search from './Search.tsx';
 import Create from './Create.tsx';
 import { useLocation } from 'react-router-dom';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -8,10 +8,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 function UserTypeRouter() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const userType = queryParams.get('user_type');
+  const userType = queryParams.get('user_type') || 'user';
 
-  if (userType === 'driver') {
-    return <App />;
+  if (userType === 'search') {
+    return <Search />;
   } else if (userType === 'user') {
     return <Create isAdmin={false} />;
   } else if (userType === 'admin') {

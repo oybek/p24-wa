@@ -126,7 +126,7 @@ function Create({ isAdmin }: CreateComponentProps) {
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} style={{ width: 180 }} />
+          <img src={logo} style={{ width: 100 }} />
         </div>
         <div>
           <label>Когда:</label>

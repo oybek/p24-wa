@@ -92,62 +92,33 @@
   position: relative;
 }
 
+.cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .card1 {
-  background: var(--tg-theme-secondary-bg-color);
-  padding: 3vw;
   border-radius: 2vw;
-  width: '100%';
-  text-align: 'left';
-  font-size: 4vw;
-  margin-bottom: 3vw;
-  transition: transform 0.3s;
-  cursor: pointer;
+  margin-bottom: 2vw;
 }
 
-.card1:hover {
-  transform: scale(1.05);
-}
-
-.card1:active {
-  transform: scale(1);
-}
-
-.modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  font-size: 5vw;
-  font-weight: bold;
-  color: #333;
-  cursor: pointer;
-  transition: color 0.2s;
-}
-
-.modal-close:hover {
-  color: red; /* Change color when hovered */
-}
-
-/* Styles for the price input */
-.price-input-container {
-  margin-bottom: 3vw;
-}
-
-.price-input-container label {
-  font-weight: bold;
-  margin-bottom: 5px;
-  display: block;
-}
-
-.price-input-container input {
-  width: 95%;
-  padding: 8px;
-  font-size: 4vw;
+.btn {
+  border-width: 0;
   border-radius: 2vw;
-  border: 1px solid #ddd;
+  padding: 2vw;
+  font-size: 4vw;
+  font-family: inherit;
+  color: var(--tg-theme-button-text-color);
+  background-color: var(--tg-theme-button-color);
+  cursor: pointer;
+  transition: border-color 0.25s;
+  width: 100%;
 }
 
-.card1.has-proposed-price {
-  background-color: rgba(0, 255, 0, 0.4); /* Light green background */
+img {
+  border-radius: 2vw;
+  width: 100%;
 }
 
 .select-container input {
@@ -205,7 +176,6 @@
     --tg-theme-button-color
   ) !important; /* Set the background color of the selected option */
   color: var(--tg-theme-button-text-color) !important;
-
 }
 
 input[type='number'] {
