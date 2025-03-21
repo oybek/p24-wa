@@ -186,7 +186,7 @@ input[type='number'] {
   box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
 }
 
-.card input {
+.card-input {
   width: 97%;
   padding: 1vw;
   font-size: 4.5vw;

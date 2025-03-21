@@ -115,6 +115,7 @@ function Search() {
             <div className="card1">
               <img src={trip1} alt={'🐢'} loading="lazy" />
               <input
+                className="card-input"
                 type="number"
                 value={trip.phone}
                 readOnly/>
