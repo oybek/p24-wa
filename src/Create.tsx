@@ -122,6 +122,12 @@ function Create({ isAdmin }: CreateComponentProps) {
     setName(e.target.value);
   };
 
+  const isNotPastDay = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date >= today;
+  };
+
   return (
     <>
       <div className="card">
@@ -140,6 +146,7 @@ function Create({ isAdmin }: CreateComponentProps) {
             timeFormat="p"
             dateFormat="dd MMMM YYYY в HH:mm"
             customInput={<DatePicker readOnly />}
+            filterDate={isNotPastDay}
           />
         </div>
         <div className="select-container">
