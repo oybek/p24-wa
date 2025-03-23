@@ -1,23 +1,20 @@
 import { createRoot } from 'react-dom/client';
+import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
+import Create from './Create.tsx';
 import './index.css';
 import Search from './Search.tsx';
-import Create from './Create.tsx';
-import { useLocation } from 'react-router-dom';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { toUserType } from './UserType.ts';
 
 function UserTypeRouter() {
   const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const userType = queryParams.get('user_type') || 'user';
+  const params = new URLSearchParams(location.search);
 
-  if (userType === 'search') {
+  if (params.has('search')) {
     return <Search />;
-  } else if (userType === 'user') {
-    return <Create isAdmin={false} />;
-  } else if (userType === 'admin') {
-    return <Create isAdmin={true} />;
   } else {
-    return <div>404</div>;
+    const isAdmin = params.has('admin');
+    const userType = toUserType(params.get('user_type')) || 'passenger';
+    return <Create isAdmin={isAdmin} userType={userType} />;
   }
 }
 

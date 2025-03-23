@@ -1,11 +1,11 @@
-import 'react-datepicker/dist/react-datepicker.css';
-import './App.css';
-import Select from 'react-select';
-import { registerLocale } from 'react-datepicker';
-import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
-import { useState, useEffect } from 'react';
 import WebApp from '@twa-dev/sdk';
 import axios from 'axios';
+import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
+import { useEffect, useState } from 'react';
+import { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
+import './App.css';
 
 interface Trip {
   _id: string;
@@ -38,7 +38,7 @@ const fallbackCityList: City[] = [
 
 const userTypeSelectOptions = [
   { value: 'driver', label: 'Водителя' },
-  { value: 'user', label: 'Пассажира' },
+  { value: 'passenger', label: 'Пассажира' },
 ];
 
 function Search() {

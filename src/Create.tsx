@@ -8,6 +8,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Select from 'react-select';
 import './App.css';
 import logo from './assets/logo.gif';
+import { UserType } from './UserType.ts';
 
 interface City {
   value: string;
@@ -35,13 +36,14 @@ const fallbackCityList: City[] = [
 
 type CreateComponentProps = {
   isAdmin: boolean;
+  userType: UserType;
 };
 
-function Create({ isAdmin }: CreateComponentProps) {
+function Create({ isAdmin, userType }: CreateComponentProps) {
   // states
   const [cityList, setCityList] = useState<City[]>([]);
-  const [cityA, setCityA] = useState<any>(null);
-  const [cityB, setCityB] = useState<any>(null);
+  const [cityA, setCityA] = useState<City | null>(null);
+  const [cityB, setCityB] = useState<City | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
   const [phone, setPhone] = useState<string>('');
@@ -67,10 +69,11 @@ function Create({ isAdmin }: CreateComponentProps) {
 
   const handleSubmit = () => {
     const data = {
-      city_a: cityA.value,
-      city_b: cityB.value,
+      user_type: userType,
       start_time: selectedDate,
       seat_count: passengerCount,
+      city_a: cityA?.value,
+      city_b: cityB?.value,
       phone: phone,
       user_name: name,
       meta: {
