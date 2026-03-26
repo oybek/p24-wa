@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/p24-wa',
+  base: '/fe',
   server: {
     host: true,
     strictPort: true,
     port: 3000,
-    allowedHosts: ['.ngrok-free.app'],
+    allowedHosts: ['.ngrok-free.app', '.ngrok-free.dev'],
   },
 });

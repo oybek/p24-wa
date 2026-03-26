@@ -3,77 +3,153 @@
   text-align: left;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
 .card {
   padding: 5vw;
-}
-
-.read-the-docs {
-  color: #888;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 .select-container {
   margin-bottom: 5vw;
-  font-size: 4.5vw;
 }
 
 .select-container label {
   display: block;
-  font-weight: thin;
-  margin-bottom: 1vw;
+  margin-bottom: 1.5vw;
   text-align: left;
+  color: var(--tg-theme-hint-color);
+  font-size: 3.5vw;
 }
 
-.react-datepicker__input-container input {
-  text-align: left;
-  border: 0;
-  padding: 3vw;
-  font-size: 4vw;
-  color: var(--tg-theme-text-color) !important;
-  background-color: var(--tg-theme-bg-color) !important;
-}
-
-.react-datepicker {
-  border: 2px solid #ccc;
+/* Inputs */
+input[type='number'],
+input[type='datetime-local'],
+input[type='text'],
+input[type='tel'] {
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--tg-theme-text-color);
+  background-color: var(--tg-theme-secondary-bg-color);
+  border: none;
+  outline: none;
   border-radius: 2vw;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 3vw 4vw;
+  font-size: 4.5vw;
+  font-family: inherit;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-/* Styles for the modal and background blur */
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+/* React Select */
+.react-select__control {
+  border-radius: 2vw !important;
+  border: none !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  box-shadow: none !important;
+  min-height: unset !important;
+}
+
+.react-select__value-container {
+  padding: 3vw 4vw !important;
+  font-size: 4.5vw;
+}
+
+.react-select__indicators {
+  padding-right: 2vw;
+}
+
+.react-select__single-value {
+  color: var(--tg-theme-text-color) !important;
+}
+
+.react-select__placeholder {
+  color: var(--tg-theme-hint-color) !important;
+}
+
+.react-select__input-container {
+  color: var(--tg-theme-text-color) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.react-select__menu {
+  border-radius: 2vw !important;
+  border: none !important;
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  font-size: 4.5vw;
+}
+
+.react-select__option {
+  background-color: var(--tg-theme-secondary-bg-color) !important;
+  color: var(--tg-theme-text-color) !important;
+}
+
+.react-select__option--is-selected {
+  background-color: var(--tg-theme-button-color) !important;
+  color: var(--tg-theme-text-color) !important;
+}
+
+.react-select__option--is-focused {
+  background-color: var(--tg-theme-button-color) !important;
+}
+
+/* Cards (Search results) */
+.cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card1 {
+  border-radius: 2vw;
+  margin-bottom: 2vw;
+}
+
+.card-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 2vw;
+  font-size: 4.5vw;
+  text-align: center;
+  border-radius: 2vw;
+}
+
+.error-banner {
+  background-color: #e53935;
+  color: #ffffff;
+  border-radius: 2vw;
+  padding: 3vw 4vw;
+  font-size: 4vw;
+  text-align: center;
+  margin-bottom: 4vw;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--tg-theme-hint-color);
+  opacity: 0.3;
+  margin: 4vw 0;
+}
+
+img {
+  border-radius: 2vw;
+  width: 100%;
+}
+
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent black */
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -90,106 +166,4 @@
   max-width: 80vw;
   width: 80vw;
   position: relative;
-}
-
-.cards {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.card1 {
-  border-radius: 2vw;
-  margin-bottom: 2vw;
-}
-
-.btn {
-  border-width: 0;
-  border-radius: 2vw;
-  padding: 2vw;
-  font-size: 4vw;
-  font-family: inherit;
-  color: var(--tg-theme-button-text-color);
-  background-color: var(--tg-theme-button-color);
-  cursor: pointer;
-  transition: border-color 0.25s;
-  width: 100%;
-}
-
-img {
-  border-radius: 2vw;
-  width: 100%;
-}
-
-.select-container input {
-  width: 95%;
-  padding: 8px;
-  font-size: 4vw;
-  border-radius: 2vw;
-  border: 1px solid #ddd;
-}
-
-.react-select__control {
-  border-radius: 2vw !important;
-  border-width: 0vw !important;
-  background-color: var(--tg-theme-secondary-bg-color) !important;
-  border-color: var(--tg-theme-hint-color) !important;
-  color: var(--tg-theme-text-color) !important;
-}
-
-.react-select__single-value {
-  color: var(--tg-theme-text-color) !important;
-}
-
-.react-select__menu {
-  color: var(--tg-theme-text-color);
-  border-radius: 3vw !important;
-  border-width: 0vw !important;
-  background-color: var(--tg-theme-secondary-bg-color) !important;
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
-}
-
-.react-select__input-container {
-  color: var(--tg-theme-text-color) !important;
-}
-
-.react-select__control--is-focused {
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
-}
-
-.react-select__control--is-hover {
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
-}
-
-.react-select__option {
-  border-radius: 2vw !important;
-  background-color: var(--tg-theme-secondary-bg-color) !important;
-  color: var(--tg-theme-text-color) !important;
-}
-
-.react-select__placeholder {
-  color: var(--tg-theme-hint-color) !important;
-}
-
-.react-select__option--is-selected {
-  background-color: var(
-    --tg-theme-button-color
-  ) !important; /* Set the background color of the selected option */
-  color: var(--tg-theme-button-text-color) !important;
-}
-
-input[type='number'] {
-  color: var(--tg-theme-text-color);
-  background-color: var(--tg-theme-secondary-bg-color);
-
-  border-width: 0;
-  box-shadow: 0 0 0 0 var(--tg-theme-secondary-bg-color) !important;
-}
-
-.card-input {
-  width: 97%;
-  padding: 1vw;
-  font-size: 4.5vw;
-  text-align: center;
-  border-radius: 2vw;
 }

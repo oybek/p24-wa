@@ -1,25 +1,30 @@
 import { createRoot } from 'react-dom/client';
-import { Route, BrowserRouter as Router, Routes, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import WebApp from '@twa-dev/sdk';
+import { createJwt, listCities } from './api.ts';
+import { CityOption, cityToOption } from './cities.ts';
+import { setInitData } from './initData.ts';
 import Create from './Create.tsx';
 import './index.css';
-import Search from './Search.tsx';
-import { toUserType } from './UserType.ts';
 
 function UserTypeRouter() {
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
+  const [cities, setCities] = useState<CityOption[]>([]);
 
-  if (params.has('search')) {
-    return <Search />;
-  } else {
-    const isAdmin = params.has('admin');
-    const userType = toUserType(params.get('user_type')) || 'passenger';
-    return <Create isAdmin={isAdmin} userType={userType} />;
-  }
+  useEffect(() => {
+    setInitData(WebApp.initData);
+    createJwt(WebApp.initData).then(() =>
+      listCities().then(({ data }) =>
+        setCities(data.map(cityToOption)),
+      ),
+    );
+  }, []);
+
+  return <Create cities={cities} />;
 }
 
 createRoot(document.getElementById('root')!).render(
-  <Router basename="/p24-wa">
+  <Router basename="/fe">
     <Routes>
       <Route path="/" element={<UserTypeRouter />} />
     </Routes>

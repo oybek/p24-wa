@@ -1,216 +1,186 @@
 import WebApp from '@twa-dev/sdk';
-import { MainButton } from '@twa-dev/sdk/react';
-import axios from 'axios';
-import { ru } from 'date-fns/locale/ru'; // Import Russian locale from date-fns
-import { useEffect, useState } from 'react';
-import DatePicker, { registerLocale } from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
+import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import './App.css';
-import logo from './assets/logo.gif';
-import { UserType } from './UserType.ts';
+import { createOrder } from './api.ts';
+import { CityOption } from './cities.ts';
+import logo from './assets/logo.jpg';
 
-interface City {
-  value: string;
-  label: string;
-}
 
-const fallbackCityList: City[] = [
-  { value: 'bishkek', label: 'Бишкек' },
-  { value: 'osh', label: 'Ош' },
-  { value: 'jalal-abad', label: 'Джалал-Абад' },
-  { value: 'karakol', label: 'Каракол' },
-  { value: 'naryn', label: 'Нарын' },
-  { value: 'talas', label: 'Талас' },
-  { value: 'batken', label: 'Баткен' },
-  { value: 'tokmok', label: 'Токмок' },
-  { value: 'karabalta', label: 'Кара-Балта' },
-  { value: 'kant', label: 'Кант' },
-  { value: 'balykchy', label: 'Балыкчы' },
-  { value: 'isfana', label: 'Исфана' },
-  { value: 'kokjangak', label: 'Кок-Жангак' },
-  { value: 'suluktu', label: 'Сулюкта' },
-  { value: 'cholpon-ata', label: 'Чолпон-Ата' },
-  { value: 'shamaldy-say', label: 'Шамалды-Сай' },
-];
+const ONE_HOUR_MS = 60 * 60 * 1000;
+
+const toLocalDateTimeString = (date: Date) =>
+  new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
 type CreateComponentProps = {
-  isAdmin: boolean;
-  userType: UserType;
+  cities: CityOption[];
 };
 
-function Create({ isAdmin, userType }: CreateComponentProps) {
-  // states
-  const [cityList, setCityList] = useState<City[]>([]);
-  const [cityA, setCityA] = useState<City | null>(null);
-  const [cityB, setCityB] = useState<City | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+function Create({ cities }: CreateComponentProps) {
+  const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
+  const [addressFrom, setAddressFrom] = useState<string>('');
+  const [cityTo, setCityTo] = useState<CityOption | null>(null);
+  const [addressTo, setAddressTo] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(toLocalDateTimeString(new Date()));
   const [passengerCount, setPassengerCount] = useState<number | string>(1);
+  const [price, setPrice] = useState<number | string>('');
   const [phone, setPhone] = useState<string>('');
-  const [name, setName] = useState<string>('');
+  const [error, setError] = useState(false);
 
-  // functions
-  const fetchCityList = () => {
-    axios.get<City[]>(`https://booklink.pro/p24/cities`).then((response) => {
-      if (response.data) {
-        const parsedCityList = response.data?.map(
-          (trip: any) =>
-            ({
-              value: trip.key,
-              label: trip.value,
-            }) as City,
-        );
-        setCityList(parsedCityList);
-      } else {
-        setCityList(fallbackCityList);
-      }
-    });
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(false), 3000);
+    return () => clearTimeout(timer);
+  }, [error]);
+
+  const handleSubmit = async () => {
+    if (!formValid) return;
+    try {
+      const { data } = await createOrder({
+        when: new Date(selectedDate).toISOString(),
+        city_from: cityFrom!.value,
+        address_from: addressFrom,
+        city_to: cityTo!.value,
+        address_to: addressTo,
+        passenger_count: Number(passengerCount),
+        price: Number(price),
+        contact: phone,
+      });
+      WebApp.openTelegramLink(data.link);
+      WebApp.close();
+    } catch {
+      setError(true);
+    }
   };
 
-  const handleSubmit = () => {
-    const data = {
-      user_type: userType,
-      start_time: selectedDate,
-      seat_count: passengerCount,
-      city_a: cityA?.value,
-      city_b: cityB?.value,
-      phone: phone,
-      user_name: name,
-      meta: {
-        time_offset: -new Date().getTimezoneOffset() / 60,
-      },
-    };
-    WebApp.sendData(JSON.stringify(data));
-  };
+  const formValid = useMemo(() => {
+    const oneHourAgo = new Date(Date.now() - ONE_HOUR_MS);
+    return !!(
+      cityFrom &&
+      cityTo &&
+      addressFrom &&
+      addressTo &&
+      selectedDate &&
+      new Date(selectedDate) >= oneHourAgo &&
+      Number(passengerCount) > 0 &&
+      Number(price) > 0 &&
+      phone
+    );
+  }, [cityFrom, cityTo, addressFrom, addressTo, selectedDate, passengerCount, price, phone]);
 
-  // effects
   useEffect(() => {
     WebApp.ready();
-    WebApp.expand();
-    updateMainButton();
-    WebApp.MainButton.show();
-    fetchCityList();
-    registerLocale('ru', ru);
   }, []);
-
-  useEffect(() => {
-    console.log(selectedDate);
-    updateMainButton();
-  }, [cityA, cityB, selectedDate, passengerCount, phone]);
-
-  const updateMainButton = () => {
-    if (cityA && cityB && selectedDate && Number(passengerCount) > 0) {
-      WebApp.MainButton.setParams({ color: '#4bb254' });
-      WebApp.MainButton.enable();
-    } else {
-      WebApp.MainButton.setParams({ color: '#3b3b3b' });
-      WebApp.MainButton.disable();
-    }
-  };
-
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '' || isNaN(Number(value))) {
-      setPassengerCount('');
-    } else {
-      setPassengerCount(Number(value));
-    }
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPhone(e.target.value);
-  };
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setName(e.target.value);
-  };
-
-  const isNotPastDay = (date: Date) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date >= today;
-  };
 
   return (
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} style={{ width: 100 }} />
+          <img src={logo} style={{ width: 100, borderRadius: '50%' }} />
         </div>
-        <div>
-          <label>Когда:</label>
-          <DatePicker
-            selected={selectedDate}
-            onChange={(date) => setSelectedDate(date)}
-            locale="ru"
-            showTimeSelect
-            timeIntervals={60}
-            onFocus={(e) => e.target.blur()}
-            timeFormat="p"
-            dateFormat="dd MMMM YYYY в HH:mm"
-            customInput={<DatePicker readOnly />}
-            filterDate={isNotPastDay}
+
+        <div className="select-container">
+          <label htmlFor="date-picker">Когда</label>
+          <input
+            id="date-picker"
+            type="datetime-local"
+            lang="ru-RU"
+            value={selectedDate}
+            min={toLocalDateTimeString(new Date(Date.now() - ONE_HOUR_MS))}
+            onChange={(e) => setSelectedDate(e.target.value)}
           />
         </div>
+
         <div className="select-container">
-          <label>Сколько мест</label>
+          <label htmlFor="city-from-select">Откуда</label>
+          <Select
+            inputId="city-from-select"
+            value={cityFrom}
+            onChange={setCityFrom}
+            options={cities}
+            isSearchable={true}
+            classNamePrefix="react-select"
+            placeholder="Выберите город"
+          />
+        </div>
+
+        <div className="select-container">
+          <label htmlFor="address-from">Адрес</label>
+          <input
+            id="address-from"
+            type="text"
+            value={addressFrom}
+            onChange={(e) => setAddressFrom(e.target.value)}
+            placeholder="Улица, дом"
+          />
+        </div>
+
+        <div className="select-container">
+          <label htmlFor="city-to-select">Куда</label>
+          <Select
+            inputId="city-to-select"
+            value={cityTo}
+            onChange={setCityTo}
+            options={cities}
+            isSearchable={true}
+            classNamePrefix="react-select"
+            placeholder="Выберите город"
+          />
+        </div>
+
+        <div className="select-container">
+          <label htmlFor="address-to">Адрес</label>
+          <input
+            id="address-to"
+            type="text"
+            value={addressTo}
+            onChange={(e) => setAddressTo(e.target.value)}
+            placeholder="Улица, дом"
+          />
+        </div>
+
+        <div className="select-container">
+          <label htmlFor="passenger-count">Мест нужно</label>
           <input
             type="number"
             inputMode="numeric"
             id="passenger-count"
             value={passengerCount}
-            onChange={handlePriceChange}
-            placeholder="Число мест"
+            onChange={(e) => setPassengerCount(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="1"
           />
         </div>
+
         <div className="select-container">
-          <label htmlFor="first-select">Из города</label>
-          <Select
-            value={cityA}
-            onChange={setCityA}
-            options={cityList}
-            isSearchable={true} // Enable search functionality
-            classNamePrefix="react-select"
-            placeholder="Выберите город"
-          />
-        </div>
-        <div className="select-container">
-          <label htmlFor="first-select">В город</label>
-          <Select
-            value={cityB}
-            onChange={setCityB}
-            options={cityList}
-            isSearchable={true} // Enable search functionality
-            classNamePrefix="react-select"
-            placeholder="Выберите город"
-          />
-        </div>
-        <div className="select-container">
-          <label>Телефон (Оставьте пустым - свяжутся в ЛС)</label>
+          <label htmlFor="price">Заплачу</label>
           <input
             type="number"
             inputMode="numeric"
-            id="phone"
-            value={phone}
-            onChange={handlePhoneChange}
-            placeholder="0555123456"
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
+            placeholder="0"
           />
         </div>
-        {isAdmin ? (
-          <div className="select-container">
-            <label>Имя</label>
-            <input
-              type="text"
-              id="name"
-              value={name}
-              onChange={handleNameChange}
-              placeholder="Имя"
-            />
-          </div>
-        ) : (
-          <></>
-        )}
-        <MainButton text="Отправить" onClick={handleSubmit} />
+
+        <div className="select-container">
+          <label htmlFor="phone">Телефон</label>
+          <input
+            id="phone"
+            type="tel"
+            inputMode="numeric"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="0xxxxxxxxx"
+            pattern="0[0-9]{9}"
+          />
+        </div>
+
+        {error && <div className="error-banner">Что-то пошло не так 😢</div>}
+        <hr className="divider" />
+        <button onClick={handleSubmit} disabled={!formValid}>
+          Отправить
+        </button>
       </div>
     </>
   );
