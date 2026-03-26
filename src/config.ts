@@ -1,1 +1,1 @@
-export const API_BASE_URL = 'https://fontal-harold-unservile.ngrok-free.dev/be/';
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;

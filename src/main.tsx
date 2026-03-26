@@ -10,21 +10,19 @@ import './index.css';
 
 function UserTypeRouter() {
   const [cities, setCities] = useState<CityOption[]>([]);
-
   useEffect(() => {
     setInitData(WebApp.initData);
-    createJwt(WebApp.initData).then(() =>
-      listCities().then(({ data }) =>
-        setCities(data.map(cityToOption)),
-      ),
-    );
+    createJwt(WebApp.initData)
+      .then(() => listCities())
+      .then(({ data }) => setCities(Array.isArray(data) ? data.map(cityToOption) : []))
+      .catch(console.error);
   }, []);
 
   return <Create cities={cities} />;
 }
 
 createRoot(document.getElementById('root')!).render(
-  <Router basename="/fe">
+  <Router basename={import.meta.env.BASE_URL}>
     <Routes>
       <Route path="/" element={<UserTypeRouter />} />
     </Routes>
