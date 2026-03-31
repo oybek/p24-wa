@@ -2,9 +2,9 @@ import WebApp from '@twa-dev/sdk';
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import './App.css';
-import { createOrder } from './api.ts';
+import { createOrder, createTrip } from './api.ts';
 import { CityOption } from './cities.ts';
-import logo from './assets/logo.jpg';
+import logo from './assets/logo.svg';
 
 
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -12,11 +12,36 @@ const ONE_HOUR_MS = 60 * 60 * 1000;
 const toLocalDateTimeString = (date: Date) =>
   new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
+const labels = {
+  order: {
+    when: 'Когда',
+    cityFrom: 'Из города',
+    addressFrom: 'Адрес отправления',
+    cityTo: 'В город',
+    addressTo: 'Адрес назначения',
+    passengerCount: 'Скольно нужно мест',
+    price: 'Готов заплатить',
+    phone: 'Телефон для связи',
+  },
+  trip: {
+    when: 'Время отправления',
+    cityFrom: 'Из города',
+    addressFrom: 'Адрес отправления',
+    cityTo: 'В город',
+    addressTo: 'Адрес назначения',
+    passengerCount: 'Свободных мест',
+    price: 'Цена за место',
+    phone: 'Телефон для связи',
+  },
+} as const;
+
 type CreateComponentProps = {
   cities: CityOption[];
+  mode: 'order' | 'trip';
 };
 
-function Create({ cities }: CreateComponentProps) {
+function Create({ cities, mode }: CreateComponentProps) {
+  const l = labels[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
   const [addressFrom, setAddressFrom] = useState<string>('');
   const [cityTo, setCityTo] = useState<CityOption | null>(null);
@@ -35,17 +60,18 @@ function Create({ cities }: CreateComponentProps) {
 
   const handleSubmit = async () => {
     if (!formValid) return;
+    const payload = {
+      when: new Date(selectedDate).toISOString(),
+      city_from: cityFrom!.value,
+      address_from: addressFrom,
+      city_to: cityTo!.value,
+      address_to: addressTo,
+      passenger_count: Number(passengerCount),
+      price: Number(price),
+      contact: phone,
+    };
     try {
-      const { data } = await createOrder({
-        when: new Date(selectedDate).toISOString(),
-        city_from: cityFrom!.value,
-        address_from: addressFrom,
-        city_to: cityTo!.value,
-        address_to: addressTo,
-        passenger_count: Number(passengerCount),
-        price: Number(price),
-        contact: phone,
-      });
+      const { data } = await (mode === 'trip' ? createTrip(payload) : createOrder(payload));
       WebApp.openTelegramLink(data.link);
       WebApp.close();
     } catch {
@@ -76,11 +102,22 @@ function Create({ cities }: CreateComponentProps) {
     <>
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <img src={logo} style={{ width: 100, borderRadius: '50%' }} />
+          <div style={{
+            width: 75,
+            height: 75,
+            borderRadius: '50%',
+            overflow: 'hidden',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--tg-theme-bg-color)',
+          }}>
+            <img src={logo} style={{ width: '80%' }} />
+          </div>
         </div>
 
         <div className="select-container">
-          <label htmlFor="date-picker">Когда</label>
+          <label htmlFor="date-picker">{l.when}</label>
           <input
             id="date-picker"
             type="datetime-local"
@@ -92,7 +129,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="city-from-select">Откуда</label>
+          <label htmlFor="city-from-select">{l.cityFrom}</label>
           <Select
             inputId="city-from-select"
             value={cityFrom}
@@ -105,7 +142,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="address-from">Адрес</label>
+          <label htmlFor="address-from">{l.addressFrom}</label>
           <input
             id="address-from"
             type="text"
@@ -116,7 +153,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="city-to-select">Куда</label>
+          <label htmlFor="city-to-select">{l.cityTo}</label>
           <Select
             inputId="city-to-select"
             value={cityTo}
@@ -129,7 +166,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="address-to">Адрес</label>
+          <label htmlFor="address-to">{l.addressTo}</label>
           <input
             id="address-to"
             type="text"
@@ -140,7 +177,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="passenger-count">Мест нужно</label>
+          <label htmlFor="passenger-count">{l.passengerCount}</label>
           <input
             type="number"
             inputMode="numeric"
@@ -152,7 +189,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="price">Заплачу</label>
+          <label htmlFor="price">{l.price}</label>
           <input
             type="number"
             inputMode="numeric"
@@ -164,7 +201,7 @@ function Create({ cities }: CreateComponentProps) {
         </div>
 
         <div className="select-container">
-          <label htmlFor="phone">Телефон</label>
+          <label htmlFor="phone">{l.phone}</label>
           <input
             id="phone"
             type="tel"

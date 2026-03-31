@@ -59,6 +59,8 @@ export interface Order extends OrderCreate {
   id: number;
 }
 
+export type TripCreate = OrderCreate;
+
 export interface LinkResponse {
   link: string;
 }
@@ -82,3 +84,6 @@ export const updateOrderPrice = (id: number, newPrice: number) =>
   client.put<LinkResponse>(`/v1/order/${id}/price`, { new_price: newPrice });
 
 export const deleteOrder = (id: number) => client.delete<void>(`/v1/order/${id}`);
+
+export const createTrip = (trip: TripCreate) =>
+  client.post<LinkResponse>('/v1/trip', trip);

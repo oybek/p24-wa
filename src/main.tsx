@@ -10,6 +10,8 @@ import './index.css';
 
 function UserTypeRouter() {
   const [cities, setCities] = useState<CityOption[]>([]);
+  const mode = WebApp.initDataUnsafe.start_param === 'trip' ? 'trip' : 'order';
+
   useEffect(() => {
     setInitData(WebApp.initData);
     createJwt(WebApp.initData)
@@ -18,7 +20,7 @@ function UserTypeRouter() {
       .catch(console.error);
   }, []);
 
-  return <Create cities={cities} />;
+  return <Create cities={cities} mode={mode} />;
 }
 
 createRoot(document.getElementById('root')!).render(
