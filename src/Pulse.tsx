@@ -14,66 +14,16 @@ const KEY_LABELS: Record<string, string> = {
   call_trip: 'Звонок водителю',
 };
 
-function cssVar(name: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-
-function buildCallOption(data: MetricEvent[]) {
-  const text = cssVar('--tg-theme-text-color') || '#000000';
-  const hint = cssVar('--tg-theme-hint-color') || '#999999';
-  const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
-
-  const keys = [...new Set(data.map((e) => e.key))].sort().reverse();
-  const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
-
-  const series = keys.map((key) => {
-    const byDate = Object.fromEntries(
-      data.filter((e) => e.key === key).map((e) => [e.date, e.count]),
-    );
-    return {
-      type: 'bar' as const,
-      label: { show: true, position: 'right' as const, color: cssVar('--tg-theme-text-color') || '#000000' },
-      name: KEY_LABELS[key] ?? key,
-      data: dates.map((d) => byDate[d] ?? 0),
-    };
-  });
-
-  return {
-    textStyle: { color: text },
-    title: { text: 'Звонки', left: 'center', textStyle: { color: text } },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: { type: 'shadow' },
-      backgroundColor: bg,
-      borderColor: hint,
-      textStyle: { color: text },
-    },
-    legend: { bottom: 0, textStyle: { color: text } },
-    grid: { left: 10, right: 40, top: 40, bottom: 50, containLabel: true },
-    xAxis: {
-      type: 'value' as const,
-      name: 'Count',
-      nameTextStyle: { color: hint },
-      axisLabel: { color: hint },
-      axisLine: { lineStyle: { color: hint } },
-      splitLine: { lineStyle: { color: hint, opacity: 0.2 } },
-    },
-    yAxis: {
-      type: 'category' as const,
-      data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })),
-      axisLabel: { color: text },
-      axisLine: { lineStyle: { color: hint } },
-    },
-    series,
-  };
-}
-
 const POSTS_LABELS: Record<string, string> = {
   order: 'Заказы',
   trip: 'Поездки',
 };
 
-function buildPostsOption(data: MetricEvent[]) {
+function cssVar(name: string) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function buildChartOption(data: MetricEvent[], title: string, labels: Record<string, string>) {
   const text = cssVar('--tg-theme-text-color') || '#000000';
   const hint = cssVar('--tg-theme-hint-color') || '#999999';
   const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
@@ -87,15 +37,15 @@ function buildPostsOption(data: MetricEvent[]) {
     );
     return {
       type: 'bar' as const,
-      label: { show: true, position: 'right' as const, color: cssVar('--tg-theme-text-color') || '#000000' },
-      name: POSTS_LABELS[key] ?? key,
+      label: { show: true, position: 'right' as const, color: text },
+      name: labels[key] ?? key,
       data: dates.map((d) => byDate[d] ?? 0),
     };
   });
 
   return {
     textStyle: { color: text },
-    title: { text: 'Заказы и поездки', left: 'center', textStyle: { color: text } },
+    title: { text: title, left: 'center', textStyle: { color: text } },
     tooltip: {
       trigger: 'axis',
       axisPointer: { type: 'shadow' },
@@ -155,8 +105,8 @@ export default function Pulse() {
 
     getMetrics()
       .then(({ data }) => {
-        callChart.setOption(buildCallOption(data.call_metrics));
-        postsChart.setOption(buildPostsOption(data.posts_metrics));
+        callChart.setOption(buildChartOption(data.call_metrics, 'Звонки', KEY_LABELS));
+        postsChart.setOption(buildChartOption(data.posts_metrics, 'Заказы и поездки', POSTS_LABELS));
       })
       .catch((err) => {
         console.error('Failed to load metrics:', err);

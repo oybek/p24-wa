@@ -142,14 +142,7 @@ export const searchOrders = (params: Parameters<typeof buildSearchParams>[0] = {
   return client.get<OrdersPage>(`/v1/orders${qs ? '?' + qs : ''}`);
 };
 
-export type TripListItem = OrderListItem;
-
-export interface TripsPage {
-  items: TripListItem[];
-  next_page_token?: string;
-}
-
 export const searchTrips = (params: Parameters<typeof buildSearchParams>[0] = {}) => {
   const qs = buildSearchParams(params);
-  return client.get<TripsPage>(`/v1/trips${qs ? '?' + qs : ''}`);
+  return client.get<OrdersPage>(`/v1/trips${qs ? '?' + qs : ''}`);
 };

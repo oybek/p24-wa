@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+const METRIC_KEY = { order: 'call_order', trip: 'call_trip' } as const;
 import Select from 'react-select';
 import './App.css';
 import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts';
@@ -50,8 +52,24 @@ export default function Search({ cities, mode }: Props) {
   const [copied, setCopied] = useState<Set<number>>(new Set());
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const copyTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+
+  useEffect(() => () => { copyTimersRef.current.forEach(clearTimeout); }, []);
 
   const cityName = (id: string) => cities.find((c) => c.value === id)?.label ?? id;
+
+  const handleCopy = useCallback((id: number, contact: string) => {
+    navigator.clipboard.writeText(contact);
+    trackMetric(METRIC_KEY[mode]);
+    const prev = copyTimersRef.current.get(id);
+    if (prev) clearTimeout(prev);
+    setCopied((s) => new Set(s).add(id));
+    const timer = setTimeout(() => {
+      setCopied((s) => { const n = new Set(s); n.delete(id); return n; });
+      copyTimersRef.current.delete(id);
+    }, 2000);
+    copyTimersRef.current.set(id, timer);
+  }, [mode]);
 
   const fetchItems = useCallback(async (reset: boolean, pageToken?: string) => {
     if (loadingRef.current) return;
@@ -95,7 +113,6 @@ export default function Search({ cities, mode }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
 
-      {/* Filter block */}
       <div style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
           <div className="select-container" style={{ flex: 1, marginBottom: 0 }}>
@@ -156,7 +173,6 @@ export default function Search({ cities, mode }: Props) {
 
       <hr className="divider" style={{ margin: 0 }} />
 
-      {/* Results list */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '3vw 4vw' }}>
         {items.map((item) => (
           <div
@@ -186,12 +202,7 @@ export default function Search({ cities, mode }: Props) {
                   <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span>
                   {item.contact && (
                     <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(item.contact);
-                        trackMetric(mode === 'trip' ? 'call_trip' : 'call_order');
-                        setCopied((prev) => new Set(prev).add(item.id));
-                        setTimeout(() => setCopied((prev) => { const s = new Set(prev); s.delete(item.id); return s; }), 2000);
-                      }}
+                      onClick={() => handleCopy(item.id, item.contact)}
                       style={{
                         background: 'none',
                         border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-link-color, var(--tg-theme-button-color))'}`,
