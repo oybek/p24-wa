@@ -115,17 +115,33 @@ export interface OrdersPage {
   next_page_token?: string;
 }
 
-export const searchOrders = (params: {
+const buildSearchParams = (params: {
   city_from?: string;
   city_to?: string;
   date?: string;
   page_token?: string;
-} = {}) => {
+}) => {
   const p = new URLSearchParams();
   if (params.city_from) p.set('city_from', params.city_from);
   if (params.city_to) p.set('city_to', params.city_to);
   if (params.date) p.set('date', params.date);
   if (params.page_token) p.set('page_token', params.page_token);
-  const qs = p.toString();
+  return p.toString();
+};
+
+export const searchOrders = (params: Parameters<typeof buildSearchParams>[0] = {}) => {
+  const qs = buildSearchParams(params);
   return client.get<OrdersPage>(`/v1/orders${qs ? '?' + qs : ''}`);
+};
+
+export type TripListItem = OrderListItem;
+
+export interface TripsPage {
+  items: TripListItem[];
+  next_page_token?: string;
+}
+
+export const searchTrips = (params: Parameters<typeof buildSearchParams>[0] = {}) => {
+  const qs = buildSearchParams(params);
+  return client.get<TripsPage>(`/v1/trips${qs ? '?' + qs : ''}`);
 };

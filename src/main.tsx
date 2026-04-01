@@ -25,7 +25,8 @@ function UserTypeRouter() {
   }, []);
 
   if (startParam === 'pulse') return <Suspense fallback={null}><Pulse /></Suspense>;
-  if (startParam === 'search_order') return <Suspense fallback={null}><Search cities={cities} /></Suspense>;
+  if (startParam === 'search_order') return <Suspense fallback={null}><Search cities={cities} mode="order" /></Suspense>;
+  if (startParam === 'search_trip') return <Suspense fallback={null}><Search cities={cities} mode="trip" /></Suspense>;
 
   return <Create cities={cities} mode={mode} />;
 }

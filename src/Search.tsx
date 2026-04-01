@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Select from 'react-select';
 import './App.css';
-import { searchOrders, OrderListItem } from './api.ts';
+import { searchOrders, searchTrips, OrderListItem } from './api.ts';
 import { CityOption } from './cities.ts';
 
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
@@ -16,60 +16,81 @@ function formatWhen(when: string): string {
   return `${day} ${month} ${year} ${hh}:${mm}`;
 }
 
+const MODE_LABELS = {
+  order: {
+    person: '🙋‍♂️ Пассажир',
+    seats: '👤 Мест нужно',
+    price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
+    priceLabel: '💰 Оплата',
+    empty: 'Заказов не найдено',
+  },
+  trip: {
+    person: '🚗 Водитель',
+    seats: '👤 Мест',
+    price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
+    priceLabel: '💰 Цена за место',
+    empty: 'Поездок не найдено',
+  },
+} as const;
+
 interface Props {
   cities: CityOption[];
+  mode: 'order' | 'trip';
 }
 
-export default function Search({ cities }: Props) {
+export default function Search({ cities, mode }: Props) {
+  const labels = MODE_LABELS[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
   const [cityTo, setCityTo] = useState<CityOption | null>(null);
   const [date, setDate] = useState('');
-  const [orders, setOrders] = useState<OrderListItem[]>([]);
+  const [items, setItems] = useState<OrderListItem[]>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
+  const [copied, setCopied] = useState<Set<number>>(new Set());
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const cityName = (id: string) => cities.find((c) => c.value === id)?.label ?? id;
 
-  const fetchOrders = useCallback(async (reset: boolean, pageToken?: string) => {
+  const fetchItems = useCallback(async (reset: boolean, pageToken?: string) => {
     if (loadingRef.current) return;
     loadingRef.current = true;
     setLoading(true);
     try {
-      const { data } = await searchOrders({
+      const params = {
         city_from: cityFrom?.value,
         city_to: cityTo?.value,
         date: date || undefined,
         page_token: pageToken,
-      });
-      setOrders((prev) => (reset ? data.items : [...prev, ...data.items]));
+      };
+      const { data } = await (mode === 'trip' ? searchTrips(params) : searchOrders(params));
+      setItems((prev) => (reset ? data.items : [...prev, ...data.items]));
       setNextToken(data.next_page_token ?? null);
     } catch (err) {
-      console.error('Failed to fetch orders:', err);
+      console.error('Failed to fetch:', err);
     } finally {
       loadingRef.current = false;
       setLoading(false);
     }
-  }, [cityFrom, cityTo, date]);
+  }, [cityFrom, cityTo, date, mode]);
 
   // Debounced fetch on filter change
   useEffect(() => {
-    const timer = setTimeout(() => fetchOrders(true), 100);
+    const timer = setTimeout(() => fetchItems(true), 100);
     return () => clearTimeout(timer);
-  }, [fetchOrders]);
+  }, [fetchItems]);
 
   // Infinite scroll sentinel
   useEffect(() => {
     if (!sentinelRef.current || !nextToken) return;
     const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) fetchOrders(false, nextToken); },
+      ([entry]) => { if (entry.isIntersecting) fetchItems(false, nextToken); },
       { threshold: 0.1 },
     );
     observer.observe(sentinelRef.current);
     return () => observer.disconnect();
-  }, [nextToken, fetchOrders]);
+  }, [nextToken, fetchItems]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -116,9 +137,9 @@ export default function Search({ cities }: Props) {
 
       {/* Results list */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '3vw 4vw' }}>
-        {orders.map((order) => (
+        {items.map((item) => (
           <div
-            key={order.id}
+            key={item.id}
             style={{
               background: 'var(--tg-theme-secondary-bg-color)',
               borderRadius: '3vw',
@@ -129,22 +150,47 @@ export default function Search({ cities }: Props) {
               color: 'var(--tg-theme-text-color)',
             }}
           >
-            <div>🙋‍♂️ Пассажир: {order.name}</div>
+            <div>{labels.person}: {item.name}</div>
             <br />
-            <div>📍 Откуда: {cityName(order.city_from)}{order.address_from ? `, ${order.address_from}` : ''}</div>
-            <div>📍 Куда: {cityName(order.city_to)}{order.address_to ? `, ${order.address_to}` : ''}</div>
-            <div>🕖 Когда: {formatWhen(order.when)}</div>
-            <div>👤 Мест нужно: {order.passenger_count}</div>
-            <div>💰 Оплата: {order.price === 0 ? 'Договорная' : `${order.price} сом`}</div>
+            <div>📍 Откуда: {cityName(item.city_from)}{item.address_from ? `, ${item.address_from}` : ''}</div>
+            <div>📍 Куда: {cityName(item.city_to)}{item.address_to ? `, ${item.address_to}` : ''}</div>
+            <div>🕖 Когда: {formatWhen(item.when)}</div>
+            <div>{labels.seats}: {item.passenger_count}</div>
+            <div>{labels.priceLabel}: {labels.price(item.price)}</div>
             <br />
-            <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1vw' }}>
               {'📞 '}
-              {revealed.has(order.id) ? (order.contact || '—') : (
+              {revealed.has(item.id) ? (
+                <>
+                  <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span>
+                  {item.contact && (
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(item.contact);
+                        setCopied((prev) => new Set(prev).add(item.id));
+                        setTimeout(() => setCopied((prev) => { const s = new Set(prev); s.delete(item.id); return s; }), 2000);
+                      }}
+                      style={{
+                        background: 'none',
+                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-link-color, var(--tg-theme-button-color))'}`,
+                        borderRadius: '1.5vw',
+                        cursor: 'pointer',
+                        padding: '0.5vw 2vw',
+                        fontSize: '3.5vw',
+                        color: copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-link-color, var(--tg-theme-button-color))',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {copied.has(item.id) ? 'Скопирован' : 'Копировать'}
+                    </button>
+                  )}
+                </>
+              ) : (
                 <a
                   href="#"
                   onClick={(e) => {
                     e.preventDefault();
-                    setRevealed((prev) => new Set(prev).add(order.id));
+                    setRevealed((prev) => new Set(prev).add(item.id));
                   }}
                   style={{ color: 'var(--tg-theme-link-color, var(--tg-theme-button-color))' }}
                 >
@@ -161,9 +207,9 @@ export default function Search({ cities }: Props) {
           </div>
         )}
 
-        {!loading && orders.length === 0 && (
+        {!loading && items.length === 0 && (
           <div style={{ textAlign: 'center', padding: '8vw', color: 'var(--tg-theme-hint-color)' }}>
-            Заказов не найдено
+            {labels.empty}
           </div>
         )}
 
