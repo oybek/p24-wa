@@ -14,7 +14,15 @@ const KEY_LABELS: Record<string, string> = {
   call_trip: 'Звонок водителю',
 };
 
+function cssVar(name: string) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
 function buildOption(data: MetricEvent[]) {
+  const text = cssVar('--tg-theme-text-color') || '#000000';
+  const hint = cssVar('--tg-theme-hint-color') || '#999999';
+  const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
+
   const keys = [...new Set(data.map((e) => e.key))].sort();
   const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
 
@@ -30,12 +38,31 @@ function buildOption(data: MetricEvent[]) {
   });
 
   return {
-    title: { text: 'Звонки', left: 'center' },
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { bottom: 0 },
+    textStyle: { color: text },
+    title: { text: 'Звонки', left: 'center', textStyle: { color: text } },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: bg,
+      borderColor: hint,
+      textStyle: { color: text },
+    },
+    legend: { bottom: 0, textStyle: { color: text } },
     grid: { left: 90, right: 20, top: 40, bottom: 50 },
-    xAxis: { type: 'value' as const, name: 'Count' },
-    yAxis: { type: 'category' as const, data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })) },
+    xAxis: {
+      type: 'value' as const,
+      name: 'Count',
+      nameTextStyle: { color: hint },
+      axisLabel: { color: hint },
+      axisLine: { lineStyle: { color: hint } },
+      splitLine: { lineStyle: { color: hint, opacity: 0.2 } },
+    },
+    yAxis: {
+      type: 'category' as const,
+      data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })),
+      axisLabel: { color: text },
+      axisLine: { lineStyle: { color: hint } },
+    },
     series,
   };
 }
