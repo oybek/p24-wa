@@ -23,7 +23,7 @@ function buildCallOption(data: MetricEvent[]) {
   const hint = cssVar('--tg-theme-hint-color') || '#999999';
   const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
 
-  const keys = [...new Set(data.map((e) => e.key))].sort();
+  const keys = [...new Set(data.map((e) => e.key))].sort().reverse();
   const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
 
   const series = keys.map((key) => {
@@ -32,6 +32,7 @@ function buildCallOption(data: MetricEvent[]) {
     );
     return {
       type: 'bar' as const,
+      label: { show: true, position: 'right' as const, color: cssVar('--tg-theme-text-color') || '#000000' },
       name: KEY_LABELS[key] ?? key,
       data: dates.map((d) => byDate[d] ?? 0),
     };
@@ -48,7 +49,7 @@ function buildCallOption(data: MetricEvent[]) {
       textStyle: { color: text },
     },
     legend: { bottom: 0, textStyle: { color: text } },
-    grid: { left: 90, right: 20, top: 40, bottom: 50 },
+    grid: { left: 10, right: 40, top: 40, bottom: 50, containLabel: true },
     xAxis: {
       type: 'value' as const,
       name: 'Count',
@@ -77,7 +78,7 @@ function buildPostsOption(data: MetricEvent[]) {
   const hint = cssVar('--tg-theme-hint-color') || '#999999';
   const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
 
-  const keys = [...new Set(data.map((e) => e.key))].sort();
+  const keys = [...new Set(data.map((e) => e.key))].sort().reverse();
   const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
 
   const series = keys.map((key) => {
@@ -86,6 +87,7 @@ function buildPostsOption(data: MetricEvent[]) {
     );
     return {
       type: 'bar' as const,
+      label: { show: true, position: 'right' as const, color: cssVar('--tg-theme-text-color') || '#000000' },
       name: POSTS_LABELS[key] ?? key,
       data: dates.map((d) => byDate[d] ?? 0),
     };
@@ -102,7 +104,7 @@ function buildPostsOption(data: MetricEvent[]) {
       textStyle: { color: text },
     },
     legend: { bottom: 0, textStyle: { color: text } },
-    grid: { left: 90, right: 20, top: 40, bottom: 50 },
+    grid: { left: 10, right: 40, top: 40, bottom: 50, containLabel: true },
     xAxis: {
       type: 'value' as const,
       name: 'Count',
