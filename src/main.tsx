@@ -16,6 +16,8 @@ function UserTypeRouter() {
   const mode = startParam === 'trip' ? 'trip' : 'order';
 
   useEffect(() => {
+    WebApp.expand();
+    WebApp.disableVerticalSwipes();
     setInitData(WebApp.initData);
     if (startParam === 'pulse') return;
     createJwt(WebApp.initData)
