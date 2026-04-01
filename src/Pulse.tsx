@@ -3,6 +3,8 @@ import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
+import { format, parseISO } from 'date-fns';
+import { ru } from 'date-fns/locale';
 import { getMetrics, MetricEvent } from './api.ts';
 
 echarts.use([BarChart, GridComponent, LegendComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
@@ -33,7 +35,7 @@ function buildOption(data: MetricEvent[]) {
     legend: { bottom: 0 },
     grid: { left: 90, right: 20, top: 40, bottom: 50 },
     xAxis: { type: 'value' as const, name: 'Count' },
-    yAxis: { type: 'category' as const, data: dates },
+    yAxis: { type: 'category' as const, data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })) },
     series,
   };
 }
