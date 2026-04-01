@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components';
+import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { getMetrics, MetricEvent } from './api.ts';
 
-echarts.use([BarChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer]);
+echarts.use([BarChart, GridComponent, LegendComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
+
+const KEY_LABELS: Record<string, string> = {
+  call_order: 'Звонок пассажиру',
+  call_trip: 'Звонок водителю',
+};
 
 function buildOption(data: MetricEvent[]) {
   const keys = [...new Set(data.map((e) => e.key))].sort();
@@ -17,15 +22,16 @@ function buildOption(data: MetricEvent[]) {
     );
     return {
       type: 'bar' as const,
-      name: key,
+      name: KEY_LABELS[key] ?? key,
       data: dates.map((d) => byDate[d] ?? 0),
     };
   });
 
   return {
+    title: { text: 'Звонки', left: 'center' },
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { bottom: 0 },
-    grid: { left: 90, right: 20, top: 20, bottom: 50 },
+    grid: { left: 90, right: 20, top: 40, bottom: 50 },
     xAxis: { type: 'value' as const, name: 'Count' },
     yAxis: { type: 'category' as const, data: dates },
     series,
@@ -37,15 +43,27 @@ export default function Pulse() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const chart = echarts.init(chartRef.current!);
-    const handleResize = () => chart.resize();
+    if (!chartRef.current) return;
+    const chart = echarts.init(chartRef.current);
+
+    let disposed = false;
+    let resizeTimer: ReturnType<typeof setTimeout>;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => { if (!disposed) chart.resize(); }, 150);
+    };
     window.addEventListener('resize', handleResize);
 
     getMetrics()
       .then(({ data }) => chart.setOption(buildOption(data)))
-      .catch(() => setError('Failed to load metrics'));
+      .catch((err) => {
+        console.error('Failed to load metrics:', err);
+        setError('Failed to load metrics');
+      });
 
     return () => {
+      disposed = true;
+      clearTimeout(resizeTimer);
       window.removeEventListener('resize', handleResize);
       chart.dispose();
     };
