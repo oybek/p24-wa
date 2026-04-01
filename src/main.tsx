@@ -7,6 +7,7 @@ import { CityOption, cityToOption } from './cities.ts';
 import { setInitData } from './initData.ts';
 import Create from './Create.tsx';
 const Pulse = lazy(() => import('./Pulse.tsx'));
+const Search = lazy(() => import('./Search.tsx'));
 import './index.css';
 
 function UserTypeRouter() {
@@ -24,6 +25,7 @@ function UserTypeRouter() {
   }, []);
 
   if (startParam === 'pulse') return <Suspense fallback={null}><Pulse /></Suspense>;
+  if (startParam === 'search_order') return <Suspense fallback={null}><Search cities={cities} /></Suspense>;
 
   return <Create cities={cities} mode={mode} />;
 }

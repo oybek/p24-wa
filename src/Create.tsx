@@ -61,6 +61,7 @@ function Create({ cities, mode }: CreateComponentProps) {
   const handleSubmit = async () => {
     if (!formValid) return;
     const payload = {
+      name: WebApp.initDataUnsafe.user?.first_name ?? '',
       when: new Date(selectedDate).toISOString(),
       city_from: cityFrom!.value,
       address_from: addressFrom,

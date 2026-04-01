@@ -45,6 +45,7 @@ export interface City {
 }
 
 export interface OrderCreate {
+  name: string;
   city_from: string;
   city_to: string;
   address_from: string;
@@ -95,3 +96,36 @@ export interface MetricEvent {
 }
 
 export const getMetrics = () => client.get<MetricEvent[]>('/v1/metrics');
+
+export interface OrderListItem {
+  id: number;
+  name: string;
+  city_from: string;
+  city_to: string;
+  address_from: string;
+  address_to: string;
+  when: string;
+  passenger_count: number;
+  price: number;
+  contact: string;
+}
+
+export interface OrdersPage {
+  items: OrderListItem[];
+  next_page_token?: string;
+}
+
+export const searchOrders = (params: {
+  city_from?: string;
+  city_to?: string;
+  date?: string;
+  page_token?: string;
+} = {}) => {
+  const p = new URLSearchParams();
+  if (params.city_from) p.set('city_from', params.city_from);
+  if (params.city_to) p.set('city_to', params.city_to);
+  if (params.date) p.set('date', params.date);
+  if (params.page_token) p.set('page_token', params.page_token);
+  const qs = p.toString();
+  return client.get<OrdersPage>(`/v1/orders${qs ? '?' + qs : ''}`);
+};
