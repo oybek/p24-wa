@@ -1,24 +1,29 @@
 import { createRoot } from 'react-dom/client';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import WebApp from '@twa-dev/sdk';
 import { createJwt, listCities } from './api.ts';
 import { CityOption, cityToOption } from './cities.ts';
 import { setInitData } from './initData.ts';
 import Create from './Create.tsx';
+const Pulse = lazy(() => import('./Pulse.tsx'));
 import './index.css';
 
 function UserTypeRouter() {
   const [cities, setCities] = useState<CityOption[]>([]);
-  const mode = WebApp.initDataUnsafe.start_param === 'trip' ? 'trip' : 'order';
+  const startParam = WebApp.initDataUnsafe.start_param;
+  const mode = startParam === 'trip' ? 'trip' : 'order';
 
   useEffect(() => {
     setInitData(WebApp.initData);
+    if (startParam === 'pulse') return;
     createJwt(WebApp.initData)
       .then(() => listCities())
       .then(({ data }) => setCities(Array.isArray(data) ? data.map(cityToOption) : []))
       .catch(console.error);
   }, []);
+
+  if (startParam === 'pulse') return <Suspense fallback={null}><Pulse /></Suspense>;
 
   return <Create cities={cities} mode={mode} />;
 }

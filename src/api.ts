@@ -87,3 +87,11 @@ export const deleteOrder = (id: number) => client.delete<void>(`/v1/order/${id}`
 
 export const createTrip = (trip: TripCreate) =>
   client.post<LinkResponse>('/v1/trip', trip);
+
+export interface MetricEvent {
+  key: string;
+  count: number;
+  date: string;
+}
+
+export const getMetrics = () => client.get<MetricEvent[]>('/v1/metrics');
