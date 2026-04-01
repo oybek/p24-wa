@@ -18,7 +18,7 @@ function cssVar(name: string) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-function buildOption(data: MetricEvent[]) {
+function buildCallOption(data: MetricEvent[]) {
   const text = cssVar('--tg-theme-text-color') || '#000000';
   const hint = cssVar('--tg-theme-hint-color') || '#999999';
   const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
@@ -67,24 +67,95 @@ function buildOption(data: MetricEvent[]) {
   };
 }
 
+const POSTS_LABELS: Record<string, string> = {
+  order: 'Заказы',
+  trip: 'Поездки',
+};
+
+function buildPostsOption(data: MetricEvent[]) {
+  const text = cssVar('--tg-theme-text-color') || '#000000';
+  const hint = cssVar('--tg-theme-hint-color') || '#999999';
+  const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
+
+  const keys = [...new Set(data.map((e) => e.key))].sort();
+  const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
+
+  const series = keys.map((key) => {
+    const byDate = Object.fromEntries(
+      data.filter((e) => e.key === key).map((e) => [e.date, e.count]),
+    );
+    return {
+      type: 'bar' as const,
+      name: POSTS_LABELS[key] ?? key,
+      data: dates.map((d) => byDate[d] ?? 0),
+    };
+  });
+
+  return {
+    textStyle: { color: text },
+    title: { text: 'Заказы и поездки', left: 'center', textStyle: { color: text } },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: bg,
+      borderColor: hint,
+      textStyle: { color: text },
+    },
+    legend: { bottom: 0, textStyle: { color: text } },
+    grid: { left: 90, right: 20, top: 40, bottom: 50 },
+    xAxis: {
+      type: 'value' as const,
+      name: 'Count',
+      nameTextStyle: { color: hint },
+      axisLabel: { color: hint },
+      axisLine: { lineStyle: { color: hint } },
+      splitLine: { lineStyle: { color: hint, opacity: 0.2 } },
+    },
+    yAxis: {
+      type: 'category' as const,
+      data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })),
+      axisLabel: { color: text },
+      axisLine: { lineStyle: { color: hint } },
+    },
+    series,
+  };
+}
+
+const cardStyle = {
+  margin: '4vw',
+  padding: '4vw',
+  background: 'var(--tg-theme-secondary-bg-color)',
+  borderRadius: '4vw',
+};
+
 export default function Pulse() {
-  const chartRef = useRef<HTMLDivElement>(null);
+  const callRef = useRef<HTMLDivElement>(null);
+  const postsRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!chartRef.current) return;
-    const chart = echarts.init(chartRef.current);
+    if (!callRef.current || !postsRef.current) return;
+    const callChart = echarts.init(callRef.current);
+    const postsChart = echarts.init(postsRef.current);
 
     let disposed = false;
     let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => { if (!disposed) chart.resize(); }, 150);
+      resizeTimer = setTimeout(() => {
+        if (!disposed) {
+          callChart.resize();
+          postsChart.resize();
+        }
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
 
     getMetrics()
-      .then(({ data }) => chart.setOption(buildOption(data)))
+      .then(({ data }) => {
+        callChart.setOption(buildCallOption(data.call_metrics));
+        postsChart.setOption(buildPostsOption(data.posts_metrics));
+      })
       .catch((err) => {
         console.error('Failed to load metrics:', err);
         setError('Failed to load metrics');
@@ -94,20 +165,21 @@ export default function Pulse() {
       disposed = true;
       clearTimeout(resizeTimer);
       window.removeEventListener('resize', handleResize);
-      chart.dispose();
+      callChart.dispose();
+      postsChart.dispose();
     };
   }, []);
 
   if (error) return <div style={{ color: 'var(--tg-theme-text-color)', padding: '4vw' }}>{error}</div>;
 
   return (
-    <div style={{
-      margin: '4vw',
-      padding: '4vw',
-      background: 'var(--tg-theme-secondary-bg-color)',
-      borderRadius: '4vw',
-    }}>
-      <div ref={chartRef} style={{ width: '100%', height: '70vh' }} />
+    <div>
+      <div style={cardStyle}>
+        <div ref={callRef} style={{ width: '100%', height: '70vh' }} />
+      </div>
+      <div style={cardStyle}>
+        <div ref={postsRef} style={{ width: '100%', height: '70vh' }} />
+      </div>
     </div>
   );
 }

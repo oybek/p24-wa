@@ -95,7 +95,12 @@ export interface MetricEvent {
   date: string;
 }
 
-export const getMetrics = () => client.get<MetricEvent[]>('/v1/metrics');
+export interface Metrics {
+  call_metrics: MetricEvent[];
+  posts_metrics: MetricEvent[];
+}
+
+export const getMetrics = () => client.get<Metrics>('/v1/metrics');
 
 export const trackMetric = (key: 'call_order' | 'call_trip') =>
   client.post<void>('/v1/metric', { key });
