@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Select from 'react-select';
 import './App.css';
-import { searchOrders, searchTrips, OrderListItem } from './api.ts';
+import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts';
 import { CityOption } from './cities.ts';
 
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
@@ -125,11 +125,32 @@ export default function Search({ cities, mode }: Props) {
         </div>
         <div className="select-container" style={{ marginBottom: 0 }}>
           <label>Дата</label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <div style={{ display: 'flex', gap: '2vw', alignItems: 'stretch' }}>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={{ flex: 1 }}
+            />
+            {date && (
+              <button
+                onClick={() => setDate('')}
+                style={{
+                  background: 'var(--tg-theme-secondary-bg-color)',
+                  border: 'none',
+                  borderRadius: '2vw',
+                  cursor: 'pointer',
+                  width: '12vw',
+                  fontSize: '5vw',
+                  color: 'var(--tg-theme-hint-color)',
+                  lineHeight: 1,
+                  flexShrink: 0,
+                }}
+              >
+                ×
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -167,6 +188,7 @@ export default function Search({ cities, mode }: Props) {
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(item.contact);
+                        trackMetric(mode === 'trip' ? 'call_trip' : 'call_order');
                         setCopied((prev) => new Set(prev).add(item.id));
                         setTimeout(() => setCopied((prev) => { const s = new Set(prev); s.delete(item.id); return s; }), 2000);
                       }}

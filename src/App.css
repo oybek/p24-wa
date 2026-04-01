@@ -36,6 +36,7 @@ input[type='tel'] {
   border-radius: 2vw;
   padding: 3vw 4vw;
   font-size: 4.5vw;
+  line-height: 1.5;
   font-family: inherit;
   -webkit-appearance: none;
   appearance: none;
@@ -43,7 +44,7 @@ input[type='tel'] {
 
 @media (max-width: 768px) {
   input[type='date'] {
-    min-height: 12vw;
+    min-height: 12.75vw;
   }
 }
 
@@ -64,6 +65,7 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
 .react-select__value-container {
   padding: 3vw 4vw !important;
   font-size: 4.5vw;
+  line-height: 1.5;
 }
 
 .react-select__indicators {
