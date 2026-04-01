@@ -41,6 +41,12 @@ input[type='tel'] {
   appearance: none;
 }
 
+@media (max-width: 768px) {
+  input[type='date'] {
+    min-height: 12vw;
+  }
+}
+
 input[type='datetime-local']::-webkit-calendar-picker-indicator {
   filter: invert(0.5);
   cursor: pointer;

@@ -23,7 +23,7 @@ interface Props {
 export default function Search({ cities }: Props) {
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
   const [cityTo, setCityTo] = useState<CityOption | null>(null);
-  const [date, setDate] = useState(() => new Date().toLocaleDateString('en-CA'));
+  const [date, setDate] = useState('');
   const [orders, setOrders] = useState<OrderListItem[]>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -76,29 +76,31 @@ export default function Search({ cities }: Props) {
 
       {/* Filter block */}
       <div style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
-        <div className="select-container" style={{ marginBottom: '3vw' }}>
-          <label>Из города</label>
-          <Select
-            value={cityFrom}
-            onChange={setCityFrom}
-            options={cities}
-            isClearable
-            isSearchable
-            classNamePrefix="react-select"
-            placeholder="Откуда"
-          />
-        </div>
-        <div className="select-container" style={{ marginBottom: '3vw' }}>
-          <label>В город</label>
-          <Select
-            value={cityTo}
-            onChange={setCityTo}
-            options={cities}
-            isClearable
-            isSearchable
-            classNamePrefix="react-select"
-            placeholder="Куда"
-          />
+        <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
+          <div className="select-container" style={{ flex: 1, marginBottom: 0 }}>
+            <label>Из города</label>
+            <Select
+              value={cityFrom}
+              onChange={setCityFrom}
+              options={cities}
+              isClearable
+              isSearchable
+              classNamePrefix="react-select"
+              placeholder="Откуда"
+            />
+          </div>
+          <div className="select-container" style={{ flex: 1, marginBottom: 0 }}>
+            <label>В город</label>
+            <Select
+              value={cityTo}
+              onChange={setCityTo}
+              options={cities}
+              isClearable
+              isSearchable
+              classNamePrefix="react-select"
+              placeholder="Куда"
+            />
+          </div>
         </div>
         <div className="select-container" style={{ marginBottom: 0 }}>
           <label>Дата</label>
