@@ -202,38 +202,61 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
               color: 'var(--tg-theme-text-color)',
             }}
           >
-            <div>{labels.person}: {item.name}</div>
+            <div><b>{labels.person}:</b> {item.name}</div>
             <br />
-            <div>📍 Откуда: {cityName(item.city_from)}{item.address_from ? `, ${item.address_from}` : ''}</div>
-            <div>📍 Куда: {cityName(item.city_to)}{item.address_to ? `, ${item.address_to}` : ''}</div>
-            <div>🕖 Когда: {formatWhen(item.when)}</div>
-            <div>{labels.seats}: {item.passenger_count}</div>
-            <div>{labels.priceLabel}: {labels.price(item.price)}</div>
+            <div><b>📍 Откуда:</b> {cityName(item.city_from)}{item.address_from ? `, ${item.address_from}` : ''}</div>
+            <div><b>📍 Куда:</b> {cityName(item.city_to)}{item.address_to ? `, ${item.address_to}` : ''}</div>
+            <div><b>🕖 Когда:</b> {formatWhen(item.when)}</div>
+            <div><b>{labels.seats}:</b> {item.passenger_count}</div>
+            <div><b>{labels.priceLabel}:</b> {labels.price(item.price)}</div>
             <br />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1vw' }}>
-              {'📞 '}
-              {revealed.has(item.id) ? (
-                <>
-                  <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span>
-                  {item.contact && (
+            {revealed.has(item.id) ? (
+              <>
+                <div>📞 <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span></div>
+                {item.contact && (
+                  <div style={{ display: 'flex', gap: '2vw', marginTop: '2vw' }}>
                     <button
                       onClick={() => handleCopy(item.id, item.contact)}
                       style={{
-                        background: 'none',
-                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-link-color, var(--tg-theme-button-color))'}`,
-                        borderRadius: '1.5vw',
+                        flex: 1,
+                        background: copied.has(item.id) ? '#4caf50' : 'none',
+                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-hint-color)'}`,
+                        borderRadius: '2vw',
                         cursor: 'pointer',
-                        padding: '0.5vw 2vw',
+                        padding: '2vw 0',
                         fontSize: '3.5vw',
-                        color: copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-link-color, var(--tg-theme-button-color))',
+                        color: copied.has(item.id) ? '#fff' : 'var(--tg-theme-text-color)',
                         fontFamily: 'inherit',
                       }}
                     >
-                      {copied.has(item.id) ? 'Скопирован' : 'Копировать'}
+                      {copied.has(item.id) ? '✓ Скопирован' : '📋 Копировать'}
                     </button>
-                  )}
-                </>
-              ) : (
+                    <a
+                      href={`https://wa.me/+996${item.contact.replace(/^0/, '')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: '#128c5e',
+                        borderRadius: '2vw',
+                        padding: '2vw 0',
+                        fontSize: '3.5vw',
+                        color: '#fff',
+                        textDecoration: 'none',
+                        fontWeight: 500,
+                      }}
+                    >
+                      💬 Ватсап
+                    </a>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div>
+                {'📞 '}
                 <a
                   href="#"
                   onClick={(e) => {
@@ -244,8 +267,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                 >
                   Показать номер
                 </a>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         ))}
 
