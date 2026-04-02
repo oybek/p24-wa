@@ -14,17 +14,17 @@ const toLocalDateTimeString = (date: Date) =>
 
 const labels = {
   order: {
-    when: 'Когда',
+    when: 'Нужно выехать',
     cityFrom: 'Из города',
     addressFrom: 'Адрес отправления',
     cityTo: 'В город',
     addressTo: 'Адрес назначения',
-    passengerCount: 'Скольно нужно мест',
+    passengerCount: 'Нужно мест',
     price: 'Готов заплатить',
     phone: 'Телефон для связи',
   },
   trip: {
-    when: 'Время отправления',
+    when: 'Выезжаю',
     cityFrom: 'Из города',
     addressFrom: 'Адрес отправления',
     cityTo: 'В город',
@@ -37,10 +37,11 @@ const labels = {
 
 type CreateComponentProps = {
   cities: CityOption[];
-  mode: 'order' | 'trip';
+  initialMode?: 'order' | 'trip';
 };
 
-function Create({ cities, mode }: CreateComponentProps) {
+function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
+  const [mode, setMode] = useState<'order' | 'trip'>(initialMode);
   const l = labels[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
   const [addressFrom, setAddressFrom] = useState<string>('');
@@ -115,6 +116,21 @@ function Create({ cities, mode }: CreateComponentProps) {
           }}>
             <img src={logo} style={{ width: '80%' }} />
           </div>
+        </div>
+
+        <div className="mode-toggle">
+          <button
+            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('order')}
+          >
+            🙋‍♂️ Я пассажир
+          </button>
+          <button
+            className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('trip')}
+          >
+            🚗 Я водитель
+          </button>
         </div>
 
         <div className="select-container">

@@ -129,6 +129,33 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   border-radius: 2vw;
 }
 
+.mode-toggle {
+  display: flex;
+  gap: 1.5vw;
+  background: var(--tg-theme-secondary-bg-color);
+  border-radius: 2.5vw;
+  padding: 1.5vw;
+  margin-bottom: 5vw;
+}
+
+.mode-toggle__btn {
+  flex: 1;
+  border: none;
+  border-radius: 1.5vw;
+  padding: 2.5vw;
+  font-size: 4vw;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  color: var(--tg-theme-hint-color);
+}
+
+.mode-toggle__btn--active {
+  background: var(--tg-theme-button-color);
+  color: var(--tg-theme-button-text-color);
+  font-weight: 600;
+}
+
 .error-banner {
   background-color: #e53935;
   color: #ffffff;

@@ -13,7 +13,6 @@ import './index.css';
 function UserTypeRouter() {
   const [cities, setCities] = useState<CityOption[]>([]);
   const startParam = WebApp.initDataUnsafe.start_param;
-  const mode = startParam === 'trip' ? 'trip' : 'order';
 
   useEffect(() => {
     WebApp.expand();
@@ -30,7 +29,7 @@ function UserTypeRouter() {
   if (startParam === 'search_order') return <Suspense fallback={null}><Search cities={cities} mode="order" /></Suspense>;
   if (startParam === 'search_trip') return <Suspense fallback={null}><Search cities={cities} mode="trip" /></Suspense>;
 
-  return <Create cities={cities} mode={mode} />;
+  return <Create cities={cities} initialMode={startParam === 'trip' ? 'trip' : 'order'} />;
 }
 
 createRoot(document.getElementById('root')!).render(
