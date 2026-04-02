@@ -123,13 +123,13 @@ function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('order')}
           >
-            🙋‍♂️ Я пассажир
+            🙋‍♂️ Пассажир
           </button>
           <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
-            🚗 Я водитель
+            🚗 Водитель
           </button>
         </div>
 

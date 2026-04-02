@@ -37,10 +37,11 @@ const MODE_LABELS = {
 
 interface Props {
   cities: CityOption[];
-  mode: 'order' | 'trip';
+  initialMode?: 'order' | 'trip';
 }
 
-export default function Search({ cities, mode }: Props) {
+export default function Search({ cities, initialMode = 'order' }: Props) {
+  const [mode, setMode] = useState<'order' | 'trip'>(initialMode);
   const labels = MODE_LABELS[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
   const [cityTo, setCityTo] = useState<CityOption | null>(null);
@@ -114,6 +115,20 @@ export default function Search({ cities, mode }: Props) {
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
 
       <div style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
+        <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
+          <button
+            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('order')}
+          >
+            🙋‍♂️ Пассажир
+          </button>
+          <button
+            className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('trip')}
+          >
+            🚗 Водитель
+          </button>
+        </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
           <div className="select-container" style={{ flex: 1, marginBottom: 0 }}>
             <label>Из города</label>
