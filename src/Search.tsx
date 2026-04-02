@@ -114,7 +114,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
 
-      <div style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
+      <div className="filter-block" style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
           <button
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
