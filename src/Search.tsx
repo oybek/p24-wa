@@ -53,6 +53,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState<Set<number>>(new Set());
   const loadingRef = useRef(false);
+  const filterVersionRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const copyTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
@@ -77,6 +78,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     if (loadingRef.current) return;
     loadingRef.current = true;
     setLoading(true);
+    const version = filterVersionRef.current;
     try {
       const params = {
         city_from: cityFrom?.value,
@@ -85,18 +87,22 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
         page_token: pageToken,
       };
       const { data } = await (mode === 'trip' ? searchTrips(params) : searchOrders(params));
+      if (version !== filterVersionRef.current) return;
       setItems((prev) => (reset ? data.items : [...prev, ...data.items]));
       setNextToken(data.next_page_token ?? null);
     } catch (err) {
+      if (version !== filterVersionRef.current) return;
       console.error('Failed to fetch:', err);
     } finally {
       loadingRef.current = false;
+      if (version !== filterVersionRef.current) return;
       setLoading(false);
     }
   }, [cityFrom, cityTo, date, mode]);
 
   // Debounced fetch on filter change
   useEffect(() => {
+    filterVersionRef.current++;
     setLoading(true);
     setItems([]);
     const timer = setTimeout(() => fetchItems(true), 100);
@@ -277,7 +283,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
 
         {loading && (
           <div className="loading-logo">
-            <img src={logo} alt="loading" />
+            <img src={logo} alt="" />
           </div>
         )}
 

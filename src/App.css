@@ -181,7 +181,6 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
 
 .loading-logo img {
   width: 20vw;
-  border-radius: 0;
   animation: logo-pulse 1.4s ease-in-out infinite;
 }
 
@@ -192,7 +191,7 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   margin: 4vw 0;
 }
 
-img {
+.card-image {
   border-radius: 2vw;
   width: 100%;
 }
