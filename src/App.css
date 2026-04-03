@@ -167,6 +167,24 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   margin-bottom: 4vw;
 }
 
+@keyframes logo-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.15; }
+}
+
+.loading-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.loading-logo img {
+  width: 20vw;
+  border-radius: 0;
+  animation: logo-pulse 1.4s ease-in-out infinite;
+}
+
 .divider {
   border: none;
   border-top: 1px solid var(--tg-theme-hint-color);

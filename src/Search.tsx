@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 const METRIC_KEY = { order: 'call_order', trip: 'call_trip' } as const;
 import Select from 'react-select';
 import './App.css';
+import logo from './assets/logo.svg';
 import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts';
 import { CityOption } from './cities.ts';
 
@@ -96,6 +97,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
 
   // Debounced fetch on filter change
   useEffect(() => {
+    setLoading(true);
+    setItems([]);
     const timer = setTimeout(() => fetchItems(true), 100);
     return () => clearTimeout(timer);
   }, [fetchItems]);
@@ -188,7 +191,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
 
       <hr className="divider" style={{ margin: 0 }} />
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '3vw 4vw' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '3vw 4vw', display: 'flex', flexDirection: 'column' }}>
         {items.map((item) => (
           <div
             key={item.id}
@@ -273,8 +276,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
         ))}
 
         {loading && (
-          <div style={{ textAlign: 'center', padding: '4vw', color: 'var(--tg-theme-hint-color)' }}>
-            Загрузка...
+          <div className="loading-logo">
+            <img src={logo} alt="loading" />
           </div>
         )}
 
