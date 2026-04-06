@@ -20,6 +20,7 @@ function UserTypeRouter() {
     setInitData(WebApp.initData);
     if (startParam === 'pulse') return;
     createJwt(WebApp.initData)
+      .then(() => { WebApp.requestWriteAccess() })
       .then(() => listCities())
       .then(({ data }) => setCities(Array.isArray(data) ? data.map(cityToOption) : []))
       .catch(console.error);
