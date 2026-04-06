@@ -21,14 +21,14 @@ function formatWhen(when: string): string {
 
 const MODE_LABELS = {
   order: {
-    person: '🙋‍♂️ Пассажиры',
+    person: '🙋‍♂️ Пассажир',
     seats: '👤 Мест нужно',
     price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
     priceLabel: '💰 Оплата',
     empty: 'Заказов не найдено',
   },
   trip: {
-    person: '🚗 Водители',
+    person: '🚗 Водитель',
     seats: '👤 Мест',
     price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
     priceLabel: '💰 Цена за место',
@@ -138,13 +138,13 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('order')}
           >
-            🙋‍♂️ Пассажир{counts != null ? ` (${counts.orders})` : ''}
+            🙋‍♂️ Пассажиры{counts != null ? ` (${counts.orders})` : ''}
           </button>
           <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
-            🚗 Водитель{counts != null ? ` (${counts.trips})` : ''}
+            🚗 Водители{counts != null ? ` (${counts.trips})` : ''}
           </button>
         </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
