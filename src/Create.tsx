@@ -76,8 +76,13 @@ function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
       const { data } = await (mode === 'trip' ? createTrip(payload) : createOrder(payload));
       WebApp.openTelegramLink(data.link);
       WebApp.close();
-    } catch {
-      setError(true);
+    } catch (err: unknown) {
+      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      if (msg) {
+        WebApp.showAlert(msg);
+      } else {
+        setError(true);
+      }
     }
   };
 
