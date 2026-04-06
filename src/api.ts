@@ -98,6 +98,7 @@ export interface MetricEvent {
 export interface Metrics {
   call_metrics: MetricEvent[];
   posts_metrics: MetricEvent[];
+  users_metrics: MetricEvent[];
 }
 
 export const getMetrics = () => client.get<Metrics>('/v1/metrics');

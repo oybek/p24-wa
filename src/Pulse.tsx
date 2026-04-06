@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts/core';
 import { BarChart } from 'echarts/charts';
-import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import { DataZoomInsideComponent, GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import { CanvasRenderer } from 'echarts/renderers';
 import { format, parseISO } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { getMetrics, MetricEvent } from './api.ts';
 
-echarts.use([BarChart, GridComponent, LegendComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
+echarts.use([BarChart, DataZoomInsideComponent, GridComponent, LegendComponent, TitleComponent, TooltipComponent, CanvasRenderer]);
 
 const KEY_LABELS: Record<string, string> = {
   call_order: 'Звонок пассажиру',
@@ -17,6 +17,10 @@ const KEY_LABELS: Record<string, string> = {
 const POSTS_LABELS: Record<string, string> = {
   order: 'Заказы',
   trip: 'Поездки',
+};
+
+const USERS_LABELS: Record<string, string> = {
+  user: 'Пользователи',
 };
 
 function cssVar(name: string) {
@@ -65,10 +69,16 @@ function buildChartOption(data: MetricEvent[], title: string, labels: Record<str
     },
     yAxis: {
       type: 'category' as const,
-      data: dates.map((d) => format(parseISO(d), 'd MMM', { locale: ru })),
+      data: dates.map((d) => format(parseISO(d), 'd MMM EEEEEE', { locale: ru })),
       axisLabel: { color: text },
       axisLine: { lineStyle: { color: hint } },
     },
+    dataZoom: [{
+      type: 'inside',
+      yAxisIndex: 0,
+      start: 0,
+      end: dates.length > 0 ? Math.min(100, Math.round((7 / dates.length) * 100)) : 100,
+    }],
     series,
   };
 }
@@ -83,12 +93,14 @@ const cardStyle = {
 export default function Pulse() {
   const callRef = useRef<HTMLDivElement>(null);
   const postsRef = useRef<HTMLDivElement>(null);
+  const usersRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!callRef.current || !postsRef.current) return;
+    if (!callRef.current || !postsRef.current || !usersRef.current) return;
     const callChart = echarts.init(callRef.current);
     const postsChart = echarts.init(postsRef.current);
+    const usersChart = echarts.init(usersRef.current);
 
     let disposed = false;
     let resizeTimer: ReturnType<typeof setTimeout>;
@@ -98,6 +110,7 @@ export default function Pulse() {
         if (!disposed) {
           callChart.resize();
           postsChart.resize();
+          usersChart.resize();
         }
       }, 150);
     };
@@ -107,6 +120,7 @@ export default function Pulse() {
       .then(({ data }) => {
         callChart.setOption(buildChartOption(data.call_metrics, 'Звонки', KEY_LABELS));
         postsChart.setOption(buildChartOption(data.posts_metrics, 'Заказы и поездки', POSTS_LABELS));
+        usersChart.setOption(buildChartOption(data.users_metrics, 'Пользователи', USERS_LABELS));
       })
       .catch((err) => {
         console.error('Failed to load metrics:', err);
@@ -119,6 +133,7 @@ export default function Pulse() {
       window.removeEventListener('resize', handleResize);
       callChart.dispose();
       postsChart.dispose();
+      usersChart.dispose();
     };
   }, []);
 
@@ -127,10 +142,13 @@ export default function Pulse() {
   return (
     <div>
       <div style={cardStyle}>
-        <div ref={callRef} style={{ width: '100%', height: '70vh' }} />
+        <div ref={callRef} style={{ width: '100%', height: '50vh' }} />
       </div>
       <div style={cardStyle}>
-        <div ref={postsRef} style={{ width: '100%', height: '70vh' }} />
+        <div ref={postsRef} style={{ width: '100%', height: '50vh' }} />
+      </div>
+      <div style={cardStyle}>
+        <div ref={usersRef} style={{ width: '100%', height: '50vh' }} />
       </div>
     </div>
   );
