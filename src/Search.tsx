@@ -241,7 +241,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                       {copied.has(item.id) ? '✓ Скопирован' : '📋 Копировать'}
                     </button>
                     <a
-                      href={`https://wa.me/+996${item.contact.replace(/^0/, '')}`}
+                      href={`https://wa.me/+996${item.contact.replace(/^0/, '')}?text=${encodeURIComponent('Здравствуйте! Увидел Ваше объявление в Попутка24 (t.me/poputka24kg), еще актуально?')}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
