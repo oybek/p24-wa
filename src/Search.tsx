@@ -21,14 +21,14 @@ function formatWhen(when: string): string {
 
 const MODE_LABELS = {
   order: {
-    person: '🙋‍♂️ Пассажир',
+    person: '🙋‍♂️ Пассажиры',
     seats: '👤 Мест нужно',
     price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
     priceLabel: '💰 Оплата',
     empty: 'Заказов не найдено',
   },
   trip: {
-    person: '🚗 Водитель',
+    person: '🚗 Водители',
     seats: '👤 Мест',
     price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
     priceLabel: '💰 Цена за место',
@@ -50,6 +50,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const [items, setItems] = useState<OrderListItem[]>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [counts, setCounts] = useState<{ orders: number; trips: number } | null>(null);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState<Set<number>>(new Set());
   const loadingRef = useRef(false);
@@ -109,6 +110,14 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     return () => clearTimeout(timer);
   }, [fetchItems]);
 
+  // Fetch counts for both modes when filters change
+  useEffect(() => {
+    const params = { city_from: cityFrom?.value, city_to: cityTo?.value, date: date || undefined };
+    Promise.all([searchOrders(params), searchTrips(params)])
+      .then(([o, t]) => setCounts({ orders: o.data.count, trips: t.data.count }))
+      .catch(() => {});
+  }, [cityFrom, cityTo, date]);
+
   // Infinite scroll sentinel
   useEffect(() => {
     if (!sentinelRef.current || !nextToken) return;
@@ -129,13 +138,13 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('order')}
           >
-            🙋‍♂️ Пассажир
+            🙋‍♂️ Пассажир{counts != null ? ` (${counts.orders})` : ''}
           </button>
           <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
-            🚗 Водитель
+            🚗 Водитель{counts != null ? ` (${counts.trips})` : ''}
           </button>
         </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>

@@ -122,6 +122,7 @@ export interface OrderListItem {
 export interface OrdersPage {
   items: OrderListItem[];
   next_page_token?: string;
+  count: number;
 }
 
 const buildSearchParams = (params: {
