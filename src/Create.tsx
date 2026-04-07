@@ -2,7 +2,7 @@ import WebApp from '@twa-dev/sdk';
 import { useEffect, useMemo, useState } from 'react';
 import Select from 'react-select';
 import './App.css';
-import { createOrder, createTrip } from './api.ts';
+import { createOrder, createTrip, getApiError } from './api.ts';
 import { CityOption } from './cities.ts';
 import logo from './assets/logo.svg';
 
@@ -77,7 +77,7 @@ function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
       WebApp.openTelegramLink(data.link);
       WebApp.close();
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      const msg = getApiError(err);
       if (msg) {
         WebApp.showAlert(msg);
       } else {

@@ -81,16 +81,19 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     setLoading(true);
     const version = filterVersionRef.current;
     try {
-      const params = {
-        city_from: cityFrom?.value,
-        city_to: cityTo?.value,
-        date: date || undefined,
-        page_token: pageToken,
-      };
-      const { data } = await (mode === 'trip' ? searchTrips(params) : searchOrders(params));
+      const filterParams = { city_from: cityFrom?.value, city_to: cityTo?.value, date: date || undefined };
+      const [{ data }, otherCount] = await Promise.all([
+        (mode === 'trip' ? searchTrips : searchOrders)({ ...filterParams, page_token: pageToken }),
+        reset ? (mode === 'trip' ? searchOrders : searchTrips)(filterParams).then(r => r.data.count) : Promise.resolve(null),
+      ]);
       if (version !== filterVersionRef.current) return;
       setItems((prev) => (reset ? data.items : [...prev, ...data.items]));
       setNextToken(data.next_page_token ?? null);
+      if (reset) {
+        setCounts(mode === 'trip'
+          ? { trips: data.count, orders: otherCount as number }
+          : { orders: data.count, trips: otherCount as number });
+      }
     } catch (err) {
       if (version !== filterVersionRef.current) return;
       console.error('Failed to fetch:', err);
@@ -101,7 +104,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     }
   }, [cityFrom, cityTo, date, mode]);
 
-  // Debounced fetch on filter change
   useEffect(() => {
     filterVersionRef.current++;
     setLoading(true);
@@ -109,14 +111,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     const timer = setTimeout(() => fetchItems(true), 100);
     return () => clearTimeout(timer);
   }, [fetchItems]);
-
-  // Fetch counts for both modes when filters change
-  useEffect(() => {
-    const params = { city_from: cityFrom?.value, city_to: cityTo?.value, date: date || undefined };
-    Promise.all([searchOrders(params), searchTrips(params)])
-      .then(([o, t]) => setCounts({ orders: o.data.count, trips: t.data.count }))
-      .catch(() => {});
-  }, [cityFrom, cityTo, date]);
 
   // Infinite scroll sentinel
   useEffect(() => {

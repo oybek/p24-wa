@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, isAxiosError } from 'axios';
 import { API_BASE_URL } from './config';
 
 interface RetryableRequest extends AxiosRequestConfig {
@@ -64,6 +64,13 @@ export type TripCreate = OrderCreate;
 
 export interface LinkResponse {
   link: string;
+}
+
+export function getApiError(err: unknown): string | null {
+  if (isAxiosError(err)) {
+    return (err.response?.data as { error?: string })?.error ?? null;
+  }
+  return null;
 }
 
 export const ping = () => client.get<void>('/v1/ping');
