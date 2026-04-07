@@ -9,6 +9,7 @@ import WebApp from '@twa-dev/sdk';
 import { CityOption } from './cities.ts';
 
 const PULL_THRESHOLD = 60;
+const SCROLL_TOP_THRESHOLD = 200;
 
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const RU_MONTHS_GENITIVE = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
@@ -83,8 +84,22 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const fetchItemsRef = useRef<(reset: boolean, pageToken?: string) => Promise<void>>(async () => {});
   const pullContainerRef = useRef<HTMLDivElement>(null);
   const pullArrowRef = useRef<HTMLSpanElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => () => { copyTimersRef.current.forEach(clearTimeout); }, []);
+
+  useEffect(() => {
+    let visible = false;
+    const onScroll = () => {
+      const shouldShow = window.scrollY > SCROLL_TOP_THRESHOLD;
+      if (shouldShow !== visible) {
+        visible = shouldShow;
+        setShowScrollTop(shouldShow);
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const sections = useMemo(() => {
     const result: { key: string; label: string; items: OrderListItem[] }[] = [];
@@ -402,6 +417,31 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
 
         <div ref={sentinelRef} style={{ height: 1 }} />
       </div>
+
+      {showScrollTop && (
+        <button
+          onClick={() => { WebApp.HapticFeedback.impactOccurred('light'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          style={{
+            position: 'fixed',
+            bottom: '6vw',
+            right: '4vw',
+            width: '15.6vw',
+            height: '15.6vw',
+            borderRadius: '50%',
+            border: 'none',
+            background: 'var(--tg-theme-button-color)',
+            color: 'var(--tg-theme-button-text-color)',
+            fontSize: '7.8vw',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          }}
+        >
+          ↑
+        </button>
+      )}
     </div>
   );
 }
