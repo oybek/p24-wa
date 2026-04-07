@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const METRIC_KEY = { order: 'call_order', trip: 'call_trip' } as const;
 import Select from 'react-select';
 import './App.css';
 import logo from './assets/logo.svg';
 import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts';
+import WebApp from '@twa-dev/sdk';
 import { CityOption } from './cities.ts';
 
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+const RU_MONTHS_GENITIVE = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
 
 function formatWhen(when: string): string {
   const d = new Date(when);
@@ -17,6 +19,24 @@ function formatWhen(when: string): string {
   const hh = String(d.getHours()).padStart(2, '0');
   const mm = String(d.getMinutes()).padStart(2, '0');
   return `${day} ${month} ${year} ${hh}:${mm}`;
+}
+
+function dateKey(when: string): string {
+  const d = new Date(when);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+const sameDay = (a: Date, b: Date) =>
+  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+function formatDateHeader(when: string): string {
+  const d = new Date(when);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  if (sameDay(d, today)) return 'Сегодня';
+  if (sameDay(d, tomorrow)) return 'Завтра';
+  return `${d.getDate()} ${RU_MONTHS_GENITIVE[d.getMonth()]}`;
 }
 
 const MODE_LABELS = {
@@ -50,6 +70,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const [items, setItems] = useState<OrderListItem[]>([]);
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [pullY, setPullY] = useState(0);
   const [counts, setCounts] = useState<{ orders: number; trips: number } | null>(null);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState<Set<number>>(new Set());
@@ -57,8 +79,21 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const filterVersionRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const copyTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+  const fetchItemsRef = useRef<(reset: boolean, pageToken?: string) => Promise<void>>(async () => {});
 
   useEffect(() => () => { copyTimersRef.current.forEach(clearTimeout); }, []);
+
+  const sections = useMemo(() => {
+    const result: { key: string; label: string; items: OrderListItem[] }[] = [];
+    for (const item of items) {
+      const key = dateKey(item.when);
+      if (result.length === 0 || result[result.length - 1].key !== key) {
+        result.push({ key, label: formatDateHeader(item.when), items: [] });
+      }
+      result[result.length - 1].items.push(item);
+    }
+    return result;
+  }, [items]);
 
   const cityName = (id: string) => cities.find((c) => c.value === id)?.label ?? id;
 
@@ -112,6 +147,46 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     return () => clearTimeout(timer);
   }, [fetchItems]);
 
+  useEffect(() => { fetchItemsRef.current = fetchItems; }, [fetchItems]);
+
+  useEffect(() => {
+    const THRESHOLD = 60;
+    let startY = 0;
+    let lastY = 0;
+    let vibrated = false;
+    const onTouchStart = (e: TouchEvent) => {
+      startY = e.touches[0].clientY;
+      lastY = startY;
+      vibrated = false;
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      lastY = e.touches[0].clientY;
+      if (window.scrollY > 0) return;
+      const dy = Math.max(0, lastY - startY);
+      setPullY(dy);
+      if (dy >= THRESHOLD && !vibrated) {
+        vibrated = true;
+        WebApp.HapticFeedback.impactOccurred('medium');
+      }
+    };
+    const onTouchEnd = () => {
+      const dy = lastY - startY;
+      setPullY(0);
+      vibrated = false;
+      if (window.scrollY > 0 || dy < THRESHOLD) return;
+      setRefreshing(true);
+      fetchItemsRef.current(true).finally(() => setRefreshing(false));
+    };
+    document.addEventListener('touchstart', onTouchStart, { passive: true });
+    document.addEventListener('touchmove', onTouchMove, { passive: true });
+    document.addEventListener('touchend', onTouchEnd);
+    return () => {
+      document.removeEventListener('touchstart', onTouchStart);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend', onTouchEnd);
+    };
+  }, []);
+
   // Infinite scroll sentinel
   useEffect(() => {
     if (!sentinelRef.current || !nextToken) return;
@@ -124,7 +199,25 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   }, [nextToken, fetchItems]);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <div>
+
+      {pullY > 0 && (
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: Math.min(pullY * 0.6, 48),
+          overflow: 'hidden',
+        }}>
+          <span style={{
+            fontSize: '10.5vw',
+            color: pullY >= 60 ? 'var(--tg-theme-button-color)' : 'var(--tg-theme-hint-color)',
+            display: 'inline-block',
+            transform: `rotate(${Math.min(pullY / 60, 1) * 360}deg)`,
+            transition: 'color 0.15s',
+          }}>↻</span>
+        </div>
+      )}
 
       <div className="filter-block" style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
@@ -200,8 +293,25 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
 
       <hr className="divider" style={{ margin: 0 }} />
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '3vw 4vw', display: 'flex', flexDirection: 'column' }}>
-        {items.map((item) => (
+      <div style={{ padding: '3vw 4vw', display: 'flex', flexDirection: 'column' }}>
+        {refreshing && (
+          <div className="loading-logo">
+            <img src={logo} alt="" />
+          </div>
+        )}
+        {sections.map((section) => (
+          <Fragment key={section.key}>
+            <div style={{
+              fontSize: '3.5vw',
+              fontWeight: 600,
+              color: 'var(--tg-theme-hint-color)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              padding: '2vw 0 1vw',
+            }}>
+              {section.label}
+            </div>
+            {section.items.map((item) => (
           <div
             key={item.id}
             style={{
@@ -282,9 +392,11 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
               </div>
             )}
           </div>
+            ))}
+          </Fragment>
         ))}
 
-        {loading && (
+        {loading && !refreshing && (
           <div className="loading-logo">
             <img src={logo} alt="" />
           </div>
