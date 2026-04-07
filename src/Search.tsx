@@ -161,6 +161,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
     filterVersionRef.current++;
     setLoading(true);
     setItems([]);
+    setNextToken(null);
     const timer = setTimeout(() => fetchItems(true), 100);
     return () => clearTimeout(timer);
   }, [fetchItems]);
