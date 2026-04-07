@@ -8,6 +8,8 @@ import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts'
 import WebApp from '@twa-dev/sdk';
 import { CityOption } from './cities.ts';
 
+const PULL_THRESHOLD = 60;
+
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
 const RU_MONTHS_GENITIVE = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
 
@@ -71,7 +73,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const [nextToken, setNextToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [pullY, setPullY] = useState(0);
   const [counts, setCounts] = useState<{ orders: number; trips: number } | null>(null);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
   const [copied, setCopied] = useState<Set<number>>(new Set());
@@ -80,6 +81,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const sentinelRef = useRef<HTMLDivElement>(null);
   const copyTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const fetchItemsRef = useRef<(reset: boolean, pageToken?: string) => Promise<void>>(async () => {});
+  const pullContainerRef = useRef<HTMLDivElement>(null);
+  const pullArrowRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => () => { copyTimersRef.current.forEach(clearTimeout); }, []);
 
@@ -150,7 +153,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   useEffect(() => { fetchItemsRef.current = fetchItems; }, [fetchItems]);
 
   useEffect(() => {
-    const THRESHOLD = 60;
     let startY = 0;
     let lastY = 0;
     let vibrated = false;
@@ -163,17 +165,21 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
       lastY = e.touches[0].clientY;
       if (window.scrollY > 0) return;
       const dy = Math.max(0, lastY - startY);
-      setPullY(dy);
-      if (dy >= THRESHOLD && !vibrated) {
+      if (pullContainerRef.current) pullContainerRef.current.style.height = `${Math.min(dy * 0.6, 48)}px`;
+      if (pullArrowRef.current) {
+        pullArrowRef.current.style.transform = `rotate(${Math.min(dy / PULL_THRESHOLD, 1) * 360}deg)`;
+        pullArrowRef.current.style.color = dy >= PULL_THRESHOLD ? 'var(--tg-theme-button-color)' : 'var(--tg-theme-hint-color)';
+      }
+      if (dy >= PULL_THRESHOLD && !vibrated) {
         vibrated = true;
         WebApp.HapticFeedback.impactOccurred('medium');
       }
     };
     const onTouchEnd = () => {
       const dy = lastY - startY;
-      setPullY(0);
+      if (pullContainerRef.current) pullContainerRef.current.style.height = '0px';
       vibrated = false;
-      if (window.scrollY > 0 || dy < THRESHOLD) return;
+      if (window.scrollY > 0 || dy < PULL_THRESHOLD) return;
       setRefreshing(true);
       fetchItemsRef.current(true).finally(() => setRefreshing(false));
     };
@@ -201,23 +207,9 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   return (
     <div>
 
-      {pullY > 0 && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: Math.min(pullY * 0.6, 48),
-          overflow: 'hidden',
-        }}>
-          <span style={{
-            fontSize: '10.5vw',
-            color: pullY >= 60 ? 'var(--tg-theme-button-color)' : 'var(--tg-theme-hint-color)',
-            display: 'inline-block',
-            transform: `rotate(${Math.min(pullY / 60, 1) * 360}deg)`,
-            transition: 'color 0.15s',
-          }}>↻</span>
-        </div>
-      )}
+      <div ref={pullContainerRef} style={{ height: 0, overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span ref={pullArrowRef} style={{ fontSize: '10.5vw', display: 'inline-block', color: 'var(--tg-theme-hint-color)', transition: 'color 0.15s' }}>↻</span>
+      </div>
 
       <div className="filter-block" style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
