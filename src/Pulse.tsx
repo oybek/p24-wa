@@ -14,12 +14,12 @@ const KEY_LABELS: Record<string, string> = {
   call_trip: 'Звонок водителю',
 };
 
-const POSTS_LABELS: Record<string, string> = {
-  order: 'Заказы',
-  trip: 'Поездки',
-  parsed_order: 'Заказы (парсер)',
-  parsed_trip: 'Поездки (парсер)',
-};
+const POSTS_SERIES = [
+  { key: 'order',        name: 'Заказы',           stack: 'orders', color: '#4caf50' },
+  { key: 'parsed_order', name: 'Заказы P',   stack: 'orders', color: '#a5d6a7' },
+  { key: 'trip',         name: 'Поездки',           stack: 'trips',  color: '#1976d2' },
+  { key: 'parsed_trip',  name: 'Поездки P',  stack: 'trips',  color: '#90caf9' },
+];
 
 const USERS_LABELS: Record<string, string> = {
   user: 'Пользователи',
@@ -85,6 +85,62 @@ function buildChartOption(data: MetricEvent[], title: string, labels: Record<str
   };
 }
 
+function buildPostsChartOption(data: MetricEvent[]) {
+  const text = cssVar('--tg-theme-text-color') || '#000000';
+  const hint = cssVar('--tg-theme-hint-color') || '#999999';
+  const bg   = cssVar('--tg-theme-bg-color')   || '#ffffff';
+
+  const dates = [...new Set(data.map((e) => e.date))].sort().reverse();
+
+  const series = POSTS_SERIES.map(({ key, name, stack, color }) => {
+    const byDate = Object.fromEntries(
+      data.filter((e) => e.key === key).map((e) => [e.date, e.count]),
+    );
+    return {
+      type: 'bar' as const,
+      name,
+      stack,
+      itemStyle: { color },
+      label: { show: false },
+      data: dates.map((d) => byDate[d] ?? 0),
+    };
+  });
+
+  return {
+    textStyle: { color: text },
+    title: { text: 'Заказы и поездки', left: 'center', textStyle: { color: text } },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      backgroundColor: bg,
+      borderColor: hint,
+      textStyle: { color: text },
+    },
+    legend: { bottom: 0, textStyle: { color: text } },
+    grid: { left: 10, right: 40, top: 40, bottom: 50, containLabel: true },
+    xAxis: {
+      type: 'value' as const,
+      nameTextStyle: { color: hint },
+      axisLabel: { color: hint },
+      axisLine: { lineStyle: { color: hint } },
+      splitLine: { lineStyle: { color: hint, opacity: 0.2 } },
+    },
+    yAxis: {
+      type: 'category' as const,
+      data: dates.map((d) => format(parseISO(d), 'd MMM EEEEEE', { locale: ru })),
+      axisLabel: { color: text },
+      axisLine: { lineStyle: { color: hint } },
+    },
+    dataZoom: [{
+      type: 'inside',
+      yAxisIndex: 0,
+      start: 0,
+      end: dates.length > 0 ? Math.min(100, Math.round((7 / dates.length) * 100)) : 100,
+    }],
+    series,
+  };
+}
+
 const cardStyle = {
   margin: '4vw',
   padding: '4vw',
@@ -121,7 +177,7 @@ export default function Pulse() {
     getMetrics()
       .then(({ data }) => {
         callChart.setOption(buildChartOption(data.call_metrics, 'Звонки', KEY_LABELS));
-        postsChart.setOption(buildChartOption(data.posts_metrics, 'Заказы и поездки', POSTS_LABELS));
+        postsChart.setOption(buildPostsChartOption(data.posts_metrics));
         usersChart.setOption(buildChartOption(data.users_metrics, 'Пользователи', USERS_LABELS));
       })
       .catch((err) => {
