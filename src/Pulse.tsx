@@ -17,6 +17,8 @@ const KEY_LABELS: Record<string, string> = {
 const POSTS_LABELS: Record<string, string> = {
   order: 'Заказы',
   trip: 'Поездки',
+  parsed_order: 'Заказы (парсер)',
+  parsed_trip: 'Поездки (парсер)',
 };
 
 const USERS_LABELS: Record<string, string> = {
