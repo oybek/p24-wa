@@ -92,17 +92,13 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   const [refreshing, setRefreshing] = useState(false);
   const [counts, setCounts] = useState<{ orders: number; trips: number } | null>(null);
   const [revealed, setRevealed] = useState<Set<number>>(new Set());
-  const [copied, setCopied] = useState<Set<number>>(new Set());
   const loadingRef = useRef(false);
   const filterVersionRef = useRef(0);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const copyTimersRef = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   const fetchItemsRef = useRef<(reset: boolean, pageToken?: string) => Promise<void>>(async () => {});
   const pullContainerRef = useRef<HTMLDivElement>(null);
   const pullArrowRef = useRef<HTMLSpanElement>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => () => { copyTimersRef.current.forEach(clearTimeout); }, []);
 
   useEffect(() => {
     let visible = false;
@@ -130,19 +126,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
   }, [items]);
 
   const cityName = (id: string) => cities.find((c) => c.value === id)?.label ?? id;
-
-  const handleCopy = useCallback((id: number, contact: string) => {
-    navigator.clipboard.writeText(contact);
-    trackMetric(METRIC_KEY[mode]);
-    const prev = copyTimersRef.current.get(id);
-    if (prev) clearTimeout(prev);
-    setCopied((s) => new Set(s).add(id));
-    const timer = setTimeout(() => {
-      setCopied((s) => { const n = new Set(s); n.delete(id); return n; });
-      copyTimersRef.current.delete(id);
-    }, 2000);
-    copyTimersRef.current.set(id, timer);
-  }, [mode]);
 
   const fetchItems = useCallback(async (reset: boolean, pageToken?: string) => {
     if (loadingRef.current) return;
@@ -361,6 +344,23 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                 <div>📞 <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span></div>
                 {item.contact && (
                   <div style={{ display: 'flex', gap: '2vw', marginTop: '2vw' }}>
+                    <button
+                      onClick={() => WebApp.openTelegramLink(`https://t.me/poputka24bot?start=${mode === 'order' ? 'call' : 'callt'}${item.id}`)}
+                      style={{
+                        flex: 1,
+                        background: 'var(--tg-theme-button-color)',
+                        border: 'none',
+                        borderRadius: '2vw',
+                        cursor: 'pointer',
+                        padding: '2vw 0',
+                        fontSize: '3.5vw',
+                        color: 'var(--tg-theme-button-text-color)',
+                        fontFamily: 'inherit',
+                        fontWeight: 500,
+                      }}
+                    >
+                      📞 Позвонить
+                    </button>
                     <a
                       href={`https://wa.me/+996${item.contact.replace(/^0/, '')}?text=${encodeURIComponent(buildWaText(cityName(item.city_from), cityName(item.city_to), item.when, mode))}`}
                       target="_blank"
@@ -381,22 +381,6 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                     >
                       💬 Написать Ватсап
                     </a>
-                    <button
-                      onClick={() => handleCopy(item.id, item.contact)}
-                      style={{
-                        flex: 1,
-                        background: copied.has(item.id) ? '#4caf50' : 'none',
-                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-hint-color)'}`,
-                        borderRadius: '2vw',
-                        cursor: 'pointer',
-                        padding: '2vw 0',
-                        fontSize: '3.5vw',
-                        color: copied.has(item.id) ? '#fff' : 'var(--tg-theme-text-color)',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      {copied.has(item.id) ? '✓ Скопирован' : '📋 Скопировать номер'}
-                    </button>
                   </div>
                 )}
               </>
