@@ -55,7 +55,7 @@ function formatWaTime(when: string): string {
 
 function buildWaText(cityFrom: string, cityTo: string, when: string, mode: 'order' | 'trip'): string {
   const ending = mode === 'order' ? 'нашли машину?' : 'еще есть места?';
-  return `Здравствуйте!\nУвидел Ваше объявление в Попутка24 t.me/poputka24kg:\n${cityFrom}-${cityTo} ${formatWaTime(when)}, ${ending}`;
+  return `Здравствуйте!\nУвидел Ваше объявление в Попутка24 t.me/poputka24kg\n${cityFrom}-${cityTo} ${formatWaTime(when)}, ${ending}`;
 }
 
 const MODE_LABELS = {
