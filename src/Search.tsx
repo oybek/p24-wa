@@ -1,10 +1,9 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-const METRIC_KEY = { order: 'call_order', trip: 'call_trip' } as const;
 import Select from 'react-select';
 import './App.css';
 import logo from './assets/logo.svg';
-import { searchOrders, searchTrips, trackMetric, OrderListItem } from './api.ts';
+import { searchOrders, searchTrips, OrderListItem } from './api.ts';
 import WebApp from '@twa-dev/sdk';
 import { CityOption } from './cities.ts';
 
