@@ -42,6 +42,22 @@ function formatDateHeader(when: string): string {
   return `${d.getDate()} ${RU_MONTHS_GENITIVE[d.getMonth()]}`;
 }
 
+function formatWaTime(when: string): string {
+  const d = new Date(when);
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+  const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  if (sameDay(d, today)) return `сегодня в ${hhmm}`;
+  if (sameDay(d, tomorrow)) return `завтра в ${hhmm}`;
+  return `${d.getDate()} ${RU_MONTHS_GENITIVE[d.getMonth()]} в ${hhmm}`;
+}
+
+function buildWaText(cityFrom: string, cityTo: string, when: string, mode: 'order' | 'trip'): string {
+  const ending = mode === 'order' ? 'нашли машину?' : 'еще есть места?';
+  return `Здравствуйте!\nУвидел Ваше объявление в Попутка24 t.me/poputka24kg:\n${cityFrom}-${cityTo} ${formatWaTime(when)}, ${ending}`;
+}
+
 const MODE_LABELS = {
   order: {
     person: '🙋‍♂️ Пассажир',
@@ -345,24 +361,8 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                 <div>📞 <span style={{ userSelect: 'text' }}>{item.contact || '—'}</span></div>
                 {item.contact && (
                   <div style={{ display: 'flex', gap: '2vw', marginTop: '2vw' }}>
-                    <button
-                      onClick={() => handleCopy(item.id, item.contact)}
-                      style={{
-                        flex: 1,
-                        background: copied.has(item.id) ? '#4caf50' : 'none',
-                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-hint-color)'}`,
-                        borderRadius: '2vw',
-                        cursor: 'pointer',
-                        padding: '2vw 0',
-                        fontSize: '3.5vw',
-                        color: copied.has(item.id) ? '#fff' : 'var(--tg-theme-text-color)',
-                        fontFamily: 'inherit',
-                      }}
-                    >
-                      {copied.has(item.id) ? '✓ Скопирован' : '📋 Копировать'}
-                    </button>
                     <a
-                      href={`https://wa.me/+996${item.contact.replace(/^0/, '')}?text=${encodeURIComponent('Здравствуйте! Увидел Ваше объявление в Попутка24 (t.me/poputka24kg), еще актуально?')}`}
+                      href={`https://wa.me/+996${item.contact.replace(/^0/, '')}?text=${encodeURIComponent(buildWaText(cityName(item.city_from), cityName(item.city_to), item.when, mode))}`}
                       target="_blank"
                       rel="noreferrer"
                       style={{
@@ -379,8 +379,24 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                         fontWeight: 500,
                       }}
                     >
-                      💬 Ватсап
+                      💬 Написать Ватсап
                     </a>
+                    <button
+                      onClick={() => handleCopy(item.id, item.contact)}
+                      style={{
+                        flex: 1,
+                        background: copied.has(item.id) ? '#4caf50' : 'none',
+                        border: `1px solid ${copied.has(item.id) ? '#4caf50' : 'var(--tg-theme-hint-color)'}`,
+                        borderRadius: '2vw',
+                        cursor: 'pointer',
+                        padding: '2vw 0',
+                        fontSize: '3.5vw',
+                        color: copied.has(item.id) ? '#fff' : 'var(--tg-theme-text-color)',
+                        fontFamily: 'inherit',
+                      }}
+                    >
+                      {copied.has(item.id) ? '✓ Скопирован' : '📋 Скопировать номер'}
+                    </button>
                   </div>
                 )}
               </>
