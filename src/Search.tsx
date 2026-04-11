@@ -226,18 +226,19 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
       </div>
 
       <div className="filter-block" style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
+        <label style={{ display: 'block', marginBottom: '1vw', fontSize: '3.5vw', color: 'var(--tg-theme-hint-color)' }}>Ищу</label>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
           <button
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('order')}
           >
-            🙋‍♂️ Пассажиры{counts != null ? ` (${counts.orders})` : ''}
+            🙋‍♂️ Пассажира{counts != null ? ` (${counts.orders})` : ''}
           </button>
           <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
-            🚗 Водители{counts != null ? ` (${counts.trips})` : ''}
+            🚗 Водителя{counts != null ? ` (${counts.trips})` : ''}
           </button>
         </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
