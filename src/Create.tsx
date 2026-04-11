@@ -123,7 +123,7 @@ function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
           </div>
         </div>
 
-        <label style={{ display: 'block', marginBottom: '1vw', fontSize: '3.5vw', color: 'var(--tg-theme-hint-color)' }}>Я</label>
+        <label className="toggle-label">Я</label>
         <div className="mode-toggle">
           <button
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}

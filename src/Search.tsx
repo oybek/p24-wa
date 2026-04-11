@@ -7,6 +7,7 @@ import { searchOrders, searchTrips, OrderListItem } from './api.ts';
 import WebApp from '@twa-dev/sdk';
 import { CityOption } from './cities.ts';
 
+const BOT_URL = 'https://t.me/poputka24bot';
 const PULL_THRESHOLD = 60;
 const SCROLL_TOP_THRESHOLD = 200;
 
@@ -43,13 +44,8 @@ function formatDateHeader(when: string): string {
 
 function formatWaTime(when: string): string {
   const d = new Date(when);
-  const today = new Date();
-  const tomorrow = new Date(today);
-  tomorrow.setDate(today.getDate() + 1);
   const hhmm = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  if (sameDay(d, today)) return `сегодня в ${hhmm}`;
-  if (sameDay(d, tomorrow)) return `завтра в ${hhmm}`;
-  return `${d.getDate()} ${RU_MONTHS_GENITIVE[d.getMonth()]} в ${hhmm}`;
+  return `${formatDateHeader(when).toLowerCase()} в ${hhmm}`;
 }
 
 function buildWaText(cityFrom: string, cityTo: string, when: string, mode: 'order' | 'trip'): string {
@@ -226,19 +222,19 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
       </div>
 
       <div className="filter-block" style={{ padding: '3vw 4vw', background: 'var(--tg-theme-bg-color)' }}>
-        <label style={{ display: 'block', marginBottom: '1vw', fontSize: '3.5vw', color: 'var(--tg-theme-hint-color)' }}>Ищу</label>
+        <label className="toggle-label">Ищу</label>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
           <button
             className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('order')}
           >
-            🙋‍♂️ Пассажира{counts != null ? ` (${counts.orders})` : ''}
+            🙋‍♂️ Пассажира{counts != null ? ` ${counts.orders}` : ''}
           </button>
           <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
-            🚗 Водителя{counts != null ? ` (${counts.trips})` : ''}
+            🚗 Водителя{counts != null ? ` ${counts.trips}` : ''}
           </button>
         </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
@@ -345,7 +341,7 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
                 {item.contact && (
                   <div style={{ display: 'flex', gap: '2vw', marginTop: '2vw' }}>
                     <button
-                      onClick={() => WebApp.openTelegramLink(`https://t.me/poputka24bot?start=${mode === 'order' ? 'call' : 'callt'}${item.id}`)}
+                      onClick={() => WebApp.openTelegramLink(`${BOT_URL}?start=${mode === 'order' ? 'call' : 'callt'}${item.id}`)}
                       style={{
                         flex: 1,
                         background: 'var(--tg-theme-button-color)',
