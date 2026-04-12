@@ -40,7 +40,7 @@ type CreateComponentProps = {
   initialMode?: 'order' | 'trip';
 };
 
-function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
+function Create({ cities, initialMode = 'trip' }: CreateComponentProps) {
   const [mode, setMode] = useState<'order' | 'trip'>(initialMode);
   const l = labels[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
@@ -126,16 +126,16 @@ function Create({ cities, initialMode = 'order' }: CreateComponentProps) {
         <label className="toggle-label">Я</label>
         <div className="mode-toggle">
           <button
-            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
-            onClick={() => setMode('order')}
-          >
-            🙋‍♂️ Пассажир
-          </button>
-          <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
             🚗 Водитель
+          </button>
+          <button
+            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('order')}
+          >
+            🙋‍♂️ Пассажир
           </button>
         </div>
 

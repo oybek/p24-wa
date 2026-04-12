@@ -40,8 +40,8 @@ function UserTypeRouter() {
     startParam === 'trip' || startParam === 'order' ? 'create' : 'search'
   );
 
-  const searchInitialMode = startParam === 'search_trip' ? 'trip' : 'order';
-  const createInitialMode = startParam === 'trip' ? 'trip' : 'order';
+  const searchInitialMode = startParam === 'search_order' ? 'order' : 'trip';
+  const createInitialMode = startParam === 'order' ? 'order' : 'trip';
 
   useEffect(() => {
     WebApp.expand();

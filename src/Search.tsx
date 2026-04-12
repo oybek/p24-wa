@@ -76,7 +76,7 @@ interface Props {
   initialMode?: 'order' | 'trip';
 }
 
-export default function Search({ cities, initialMode = 'order' }: Props) {
+export default function Search({ cities, initialMode = 'trip' }: Props) {
   const [mode, setMode] = useState<'order' | 'trip'>(initialMode);
   const labels = MODE_LABELS[mode];
   const [cityFrom, setCityFrom] = useState<CityOption | null>(null);
@@ -226,16 +226,16 @@ export default function Search({ cities, initialMode = 'order' }: Props) {
         <label className="toggle-label">Ищу</label>
         <div className="mode-toggle" style={{ marginBottom: '3vw' }}>
           <button
-            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
-            onClick={() => setMode('order')}
-          >
-            🙋‍♂️ Пассажира{counts != null ? ` ${counts.orders}` : ''}
-          </button>
-          <button
             className={mode === 'trip' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
             onClick={() => setMode('trip')}
           >
             🚗 Водителя{counts != null ? ` ${counts.trips}` : ''}
+          </button>
+          <button
+            className={mode === 'order' ? 'mode-toggle__btn mode-toggle__btn--active' : 'mode-toggle__btn'}
+            onClick={() => setMode('order')}
+          >
+            🙋‍♂️ Пассажира{counts != null ? ` ${counts.orders}` : ''}
           </button>
         </div>
         <div style={{ display: 'flex', gap: '3vw', marginBottom: '3vw' }}>
