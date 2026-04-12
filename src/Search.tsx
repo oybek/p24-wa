@@ -12,16 +12,17 @@ const PULL_THRESHOLD = 60;
 const SCROLL_TOP_THRESHOLD = 200;
 
 const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'];
+const RU_WEEKDAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const RU_MONTHS_GENITIVE = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
 
 function formatWhen(when: string): string {
   const d = new Date(when);
   const day = String(d.getDate()).padStart(2, '0');
   const month = RU_MONTHS[d.getMonth()];
-  const year = d.getFullYear();
+  const weekday = RU_WEEKDAYS[d.getDay()];
   const hh = String(d.getHours()).padStart(2, '0');
   const mm = String(d.getMinutes()).padStart(2, '0');
-  return `${day} ${month} ${year} ${hh}:${mm}`;
+  return `${day} ${month} (${weekday}), ${hh}:${mm}`;
 }
 
 function dateKey(when: string): string {
