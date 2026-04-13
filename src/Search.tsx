@@ -15,13 +15,30 @@ const RU_MONTHS = ['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', '
 const RU_WEEKDAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 const RU_MONTHS_GENITIVE = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая', 'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
 
+function hoursForm(h: number): string {
+  if (h === 1) return 'час';
+  if (h <= 4) return 'часа';
+  return 'часов';
+}
+
 function formatWhen(when: string): string {
   const d = new Date(when);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+
+  if (sameDay(d, new Date())) {
+    const diffHours = (d.getTime() - Date.now()) / 3600000;
+    if (diffHours < 1) return 'В течении часа';
+    if (diffHours <= 3) {
+      const h = Math.ceil(diffHours);
+      return `Через ${h} ${hoursForm(h)}`;
+    }
+    return `Сегодня в ${hh}:${mm}`;
+  }
+
   const day = String(d.getDate()).padStart(2, '0');
   const month = RU_MONTHS[d.getMonth()];
   const weekday = RU_WEEKDAYS[d.getDay()];
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
   return `${day} ${month} (${weekday}), ${hh}:${mm}`;
 }
 
