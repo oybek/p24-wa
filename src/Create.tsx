@@ -16,9 +16,9 @@ const labels = {
   order: {
     when: 'Нужно выехать',
     cityFrom: 'Из города',
-    addressFrom: 'Адрес отправления',
+    addressFrom: 'Адрес отправления (необязательно)',
     cityTo: 'В город',
-    addressTo: 'Адрес назначения',
+    addressTo: 'Адрес назначения (необязательно)',
     passengerCount: 'Нужно мест',
     price: 'Готов заплатить',
     phone: 'Телефон для связи',
@@ -26,9 +26,9 @@ const labels = {
   trip: {
     when: 'Выезжаю',
     cityFrom: 'Из города',
-    addressFrom: 'Адрес отправления',
+    addressFrom: 'Адрес отправления (необязательно)',
     cityTo: 'В город',
-    addressTo: 'Адрес назначения',
+    addressTo: 'Адрес назначения (необязательно)',
     passengerCount: 'Свободных мест',
     price: 'Цена за место',
     phone: 'Телефон для связи',
@@ -91,15 +91,13 @@ function Create({ cities, initialMode = 'trip' }: CreateComponentProps) {
     return !!(
       cityFrom &&
       cityTo &&
-      addressFrom &&
-      addressTo &&
       selectedDate &&
       new Date(selectedDate) >= oneHourAgo &&
       Number(passengerCount) > 0 &&
       Number(price) > 0 &&
       phone
     );
-  }, [cityFrom, cityTo, addressFrom, addressTo, selectedDate, passengerCount, price, phone]);
+  }, [cityFrom, cityTo, selectedDate, passengerCount, price, phone]);
 
   useEffect(() => {
     WebApp.ready();
