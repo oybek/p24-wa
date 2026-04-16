@@ -123,6 +123,7 @@ export interface OrderListItem {
   when: string;
   passenger_count: number;
   price: number;
+  price_tip?: number;
   contact: string;
 }
 

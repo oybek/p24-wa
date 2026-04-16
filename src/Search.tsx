@@ -75,14 +75,14 @@ const MODE_LABELS = {
   order: {
     person: '🙋‍♂️ Пассажир',
     seats: '👤 Мест нужно',
-    price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
+    price: (p: number, _tip?: number) => p === 0 ? 'Договорная' : `${p} сом`,
     priceLabel: '💰 Оплата',
     empty: 'Заказов не найдено',
   },
   trip: {
     person: '🚗 Водитель',
     seats: '👤 Мест',
-    price: (p: number) => p === 0 ? 'Договорная' : `${p} сом`,
+    price: (p: number, tip?: number) => p === 0 ? (tip ? `Договорная (~${tip} сом)` : 'Договорная') : `${p} сом`,
     priceLabel: '💰 Цена за место',
     empty: 'Поездок не найдено',
   },
@@ -351,7 +351,7 @@ export default function Search({ cities, initialMode = 'trip' }: Props) {
             <div><b>📍 Куда:</b> {cityName(item.city_to)}{item.address_to ? `, ${item.address_to}` : ''}</div>
             <div><b>🕖 Когда:</b> {formatWhen(item.when)}</div>
             <div><b>{labels.seats}:</b> {item.passenger_count}</div>
-            <div><b>{labels.priceLabel}:</b> {labels.price(item.price)}</div>
+            <div><b>{labels.priceLabel}:</b> {labels.price(item.price, item.price_tip)}</div>
             <br />
             {revealed.has(item.id) ? (
               <>
