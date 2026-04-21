@@ -6,47 +6,68 @@ on:
       - master
 
 jobs:
-  build:
-    name: Build
+  build-gh-pages:
+    name: Build (GitHub Pages)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Setup Node
-        uses: actions/setup-node@v3
-
-      - name: Install dependencies
-        uses: bahmutov/npm-install@v1
-
-      - name: Build project
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: bahmutov/npm-install@v1
+      - name: Build
         run: npm run build
-
-      - name: Upload production-ready build files
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
-          name: production-files
+          name: dist-gh-pages
           path: ./dist
 
-  deploy:
-    permissions:
-      contents: write
+  build-vps:
+    name: Build (VPS)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+      - uses: bahmutov/npm-install@v1
+      - name: Build
+        run: npx tsc -b && npx vite build --base /p24/wa/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-vps
+          path: ./dist
 
-    name: Deploy
-    needs: build
+  deploy-gh-pages:
+    name: Deploy to GitHub Pages
+    needs: build-gh-pages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
-
+    permissions:
+      contents: write
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: production-files
+          name: dist-gh-pages
           path: ./dist
-
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
+
+  deploy-vps:
+    name: Deploy to VPS
+    needs: build-vps
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-vps
+          path: ./dist
+      - name: Install rsync
+        run: sudo apt-get install -y rsync
+
+      - name: Deploy via rsync
+        run: |
+          echo "${{ secrets.VPS_SSH_KEY }}" > /tmp/vps_key
+          chmod 600 /tmp/vps_key
+          rsync -avz --delete \
+            -e "ssh -i /tmp/vps_key -o StrictHostKeyChecking=no" \
+            dist/ root@${{ secrets.VPS_HOST }}:/var/www/p24-wa/
