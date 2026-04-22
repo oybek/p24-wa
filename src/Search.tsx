@@ -82,7 +82,7 @@ const MODE_LABELS = {
   trip: {
     person: '🚗 Водитель',
     seats: '👤 Мест',
-    price: (p: number, tip?: number) => p === 0 ? (tip ? `Договорная (~${tip} сом)` : 'Договорная') : `${p} сом`,
+    price: (p: number, tip?: number) => p === 0 ? (tip ? `Договорная (около ${tip} сом)` : 'Договорная') : `${p} сом`,
     priceLabel: '💰 Цена за место',
     empty: 'Поездок не найдено',
   },
